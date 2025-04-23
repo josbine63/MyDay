@@ -1,0 +1,69 @@
+{
+  "version": "1.0",
+  "strings": {
+    "noEvents": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "value": "Aucun événement ni rappel ce jour-là."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "value": "No events or reminders today."
+          }
+        }
+      }
+    },
+    "loading": {
+      "localizations": {
+        "fr": { "stringUnit": { "value": "Chargement..." } },
+        "en": { "stringUnit": { "value": "Loading..." } }
+      }
+    },
+    "ok": {
+      "localizations": {
+        "fr": { "stringUnit": { "value": "OK" } },
+        "en": { "stringUnit": { "value": "OK" } }
+      }
+    },
+    "noAlbumTitle": {
+      "localizations": {
+        "fr": { "stringUnit": { "value": "Aucun album trouvé" } },
+        "en": { "stringUnit": { "value": "No Album Found" } }
+      }
+    },
+    "noAlbumMessage": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "value": "Aucun album photo n’a pu être trouvé. Vérifiez vos permissions ou votre photothèque."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "value": "No photo album could be found. Check your permissions or library."
+          }
+        }
+      }
+    },
+    "quotePlaceholder": {
+      "localizations": {
+        "fr": { "stringUnit": { "value": "Aucune pensée disponible." } },
+        "en": { "stringUnit": { "value": "No quote available." } }
+      }
+    },
+    "quoteError": {
+      "localizations": {
+        "fr": { "stringUnit": { "value": "Erreur de connexion." } },
+        "en": { "stringUnit": { "value": "Connection error." } }
+      }
+    },
+    "defaultWidgetTitle": {
+      "localizations": {
+        "fr": { "stringUnit": { "value": "Aucun rappel" } },
+        "en": { "stringUnit": { "value": "No reminder" } }
+      }
+    }
+  }
+}
