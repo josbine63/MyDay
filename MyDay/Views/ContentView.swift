@@ -245,7 +245,11 @@ struct ContentView: View {
                     .environmentObject(customLinkManager)
                 }
                 .fullScreenCover(isPresented: $showFullScreenPhoto) {
-                    FullScreenPhotoView(image: photoManager.currentImage, isPresented: $showFullScreenPhoto)
+                    FullScreenPhotoView(
+                        image: photoManager.currentImage, 
+                        isPresented: $showFullScreenPhoto,
+                        photoManager: photoManager
+                    )
                 }
                 // ✅ Ajouter le support de traduction iOS 18+
                 .translationTask(translationConfiguration) { session in
@@ -791,10 +795,11 @@ struct ContentView: View {
                             .gesture(
                                 TapGesture(count: 2)
                                     .onEnded {
-                                        // 🚀 Double-clic = charger en haute définition
+                                        // 🚀 Double-clic = charger en HD et ouvrir plein écran
                                         Task {
-                                            Logger.photo.info("🔍 Double-clic détecté - chargement HD...")
+                                            Logger.photo.info("🔍 Double-clic détecté - chargement HD et ouverture plein écran...")
                                             await photoManager.loadCurrentImageInHighDefinition()
+                                            showFullScreenPhoto = true
                                         }
                                     }
                             )
@@ -1964,17 +1969,20 @@ struct ContentView: View {
 struct FullScreenPhotoView: View {
     let image: UIImage?
     @Binding var isPresented: Bool
+    @ObservedObject var photoManager: PhotoManager
     @State private var scale: CGFloat = 1.0
     @State private var lastScale: CGFloat = 1.0
     @State private var offset: CGSize = .zero
     @State private var lastOffset: CGSize = .zero
+    @State private var displayImage: UIImage?
+    @State private var isLoadingHD = false
     
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
             
-            if let image = image {
-                Image(uiImage: image)
+            if let displayImg = displayImage {
+                Image(uiImage: displayImg)
                     .resizable()
                     .scaledToFit()
                     .scaleEffect(scale)
@@ -2016,6 +2024,25 @@ struct FullScreenPhotoView: View {
                     }
             }
             
+            // Indicateur de chargement HD
+            if isLoadingHD {
+                VStack {
+                    Spacer()
+                    HStack {
+                        ProgressView()
+                            .progressViewStyle(.circular)
+                            .tint(.white)
+                        Text("Chargement HD...")
+                            .foregroundColor(.white)
+                            .font(.caption)
+                    }
+                    .padding()
+                    .background(Color.black.opacity(0.7))
+                    .cornerRadius(10)
+                    Spacer()
+                }
+            }
+            
             VStack {
                 HStack {
                     Spacer()
@@ -2029,6 +2056,20 @@ struct FullScreenPhotoView: View {
                     }
                 }
                 Spacer()
+            }
+        }
+        .onAppear {
+            // Charger l'image initiale
+            displayImage = image
+            
+            // Charger automatiquement en HD au démarrage
+            Task {
+                isLoadingHD = true
+                Logger.photo.info("📸 Ouverture plein écran - chargement HD automatique...")
+                await photoManager.loadCurrentImageInHighDefinition()
+                displayImage = photoManager.currentImage
+                isLoadingHD = false
+                Logger.photo.info("✅ Image HD chargée et affichée")
             }
         }
     }
