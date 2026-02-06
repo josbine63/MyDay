@@ -1,4 +1,3 @@
-// Views/CalendarSelectionView.swift
 import SwiftUI
 
 struct CalendarSelectionView: View {
@@ -6,21 +5,18 @@ struct CalendarSelectionView: View {
 
     var body: some View {
         List {
+            Text("Total: \(manager.selectableCalendars.count) calendriers")
             ForEach(manager.selectableCalendars) { calendar in
                 HStack {
+                    Text(calendar.account)
                     Text(calendar.title)
                     Spacer()
-                    if calendar.isSelected {
-                        Image(systemName: "checkmark.circle.fill")
-                            .foregroundColor(.accentColor)
-                    } else {
-                        Image(systemName: "circle")
-                            .foregroundColor(.gray)
-                    }
+                    Image(systemName: calendar.isSelected ? "checkmark.circle.fill" : "circle")
+                        .foregroundColor(calendar.isSelected ? .accentColor : .gray)
                 }
                 .contentShape(Rectangle())
                 .onTapGesture {
-                    manager.toggleSelection(for: calendar)
+                    manager.toggleSelection(for: calendar.id)
                 }
             }
         }

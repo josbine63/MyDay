@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSHealthShareUsageDescription</key>
+	<string>MyDay a besoin d'accéder à vos données de santé pour afficher vos pas, distance et calories brûlées quotidiennes.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>MyDay a besoin d'accéder à vos données de santé pour suivre votre activité quotidienne.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>MyDay a besoin d'accéder à votre calendrier pour afficher vos événements quotidiens.</string>
+	<key>NSRemindersUsageDescription</key>
+	<string>MyDay a besoin d'accéder à vos rappels pour vous aider à gérer vos tâches quotidiennes.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>MyDay a besoin d'accéder à vos photos pour afficher des images dans votre vue quotidienne.</string>
+</dict>
+</plist>

@@ -9,6 +9,34 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>MyDayWidgetExtension.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>2274A8312DBB100800D31DBA</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>22D03D542DB97D68003266EA</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>22D03D632DB97D69003266EA</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>22D03D6D2DB97D69003266EA</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 	</dict>
 </dict>
 </plist>

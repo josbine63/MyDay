@@ -1,7 +1,1357 @@
 {
-  "sourceLanguage" : "en",
+  "sourceLanguage" : "fr",
   "strings" : {
+    "" : {
 
+    },
+    "\"%@\"" : {
+
+    },
+    "(%@)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(%@)"
+          }
+        }
+      }
+    },
+    "%@ %@" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$@"
+          }
+        }
+      }
+    },
+    "%lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld"
+          }
+        }
+      }
+    },
+    "%lld / %lld" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld / %2$lld"
+          }
+        }
+      }
+    },
+    "%lld actif(s)" : {
+
+    },
+    "%lld calendrier(s) sélectionné(s)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld calendars selected"
+          }
+        }
+      }
+    },
+    "%lld liste(s) sélectionnée(s)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld list selected"
+          }
+        }
+      }
+    },
+    "%lld/2 accordées" : {
+
+    },
+    "%lld/4 accordées" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld/4 allowed"
+          }
+        }
+      }
+    },
+    "•" : {
+
+    },
+    "• La pensée du jour s'affiche en haut de votre vue principale.\n• L'horoscope quotidien s'affiche en bas de votre vue principale." : {
+
+    },
+    "🇫🇷 Français" : {
+
+    },
+    "🇬🇧 Anglais" : {
+
+    },
+    "✅" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✅"
+          }
+        }
+      }
+    },
+    "✨" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✨"
+          }
+        }
+      }
+    },
+    "📅" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "📅"
+          }
+        }
+      }
+    },
+    "📷 Albums..." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "📷 Albums..."
+          }
+        }
+      }
+    },
+    "🔐" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🔐"
+          }
+        }
+      }
+    },
+    "🔒 Confidentialité garantie" : {
+
+    },
+    "🔮" : {
+
+    },
+    "Accès au Calendrier" : {
+
+    },
+    "Accès aux données Santé" : {
+
+    },
+    "Accès aux photos" : {
+
+    },
+    "Accès aux Rappels" : {
+
+    },
+    "Action" : {
+
+    },
+    "Actions rapides" : {
+
+    },
+    "Active les logs détaillés pour la galerie photos et EventKit (calendriers, rappels)." : {
+
+    },
+    "Activer" : {
+
+    },
+    "Activer les données de santé" : {
+
+    },
+    "Activez ces options pour personnaliser votre expérience quotidienne." : {
+
+    },
+    "Affiche l'icône" : {
+
+    },
+    "Afficher la santé" : {
+
+    },
+    "Afficher les photos" : {
+
+    },
+    "Ajouter lien de test" : {
+
+    },
+    "Ajouter un lien" : {
+
+    },
+    "Album" : {
+
+    },
+    "Album à afficher" : {
+
+    },
+    "Annuler" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "Aperçu" : {
+
+    },
+    "Assurez-vous d'avoir accordé les permissions nécessaires." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Be sure to allow necessary permissions"
+          }
+        }
+      }
+    },
+    "Aucun calendrier disponible" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Calendar available"
+          }
+        }
+      }
+    },
+    "Aucun lien personnalisé" : {
+
+    },
+    "Aucune image chargée" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "no image loaded"
+          }
+        }
+      }
+    },
+    "Aucune liste de rappels disponible" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No reminders list available"
+          }
+        }
+      }
+    },
+    "Aucune photo" : {
+
+    },
+    "Autorisations requises" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Authorization required"
+          }
+        }
+      }
+    },
+    "Balayez pour supprimer ou réorganiser. Touchez un lien pour le modifier." : {
+
+    },
+    "Bienvenue dans MyDay" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome to MyDay"
+          }
+        }
+      }
+    },
+    "Calendriers" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calendars"
+          }
+        }
+      }
+    },
+    "cancel" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Annuler"
+          }
+        }
+      }
+    },
+    "Cela vous permettra de revoir l'écran d'accueil au prochain lancement." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This will allow you to get back to the welcome screen"
+          }
+        }
+      }
+    },
+    "Ces statistiques seront affichées dans votre vue quotidienne." : {
+
+    },
+    "Chargement des événements..." : {
+
+    },
+    "Chargement..." : {
+
+    },
+    "Choisir un album" : {
+
+    },
+    "Commence par" : {
+
+    },
+    "Commencer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Begin"
+          }
+        }
+      }
+    },
+    "Compte:" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Account:"
+          }
+        }
+      }
+    },
+    "Configuration horoscope" : {
+
+    },
+    "Configurer" : {
+
+    },
+    "Contient le mot" : {
+
+    },
+    "Continuer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue"
+          }
+        }
+      }
+    },
+    "Créer dans Raccourcis" : {
+
+    },
+    "Créez des raccourcis pour ouvrir automatiquement vos notes, apps ou actions préférées depuis votre agenda." : {
+
+    },
+    "D'accord" : {
+
+    },
+    "Date" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Date"
+          }
+        }
+      }
+    },
+    "Debug" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Debug"
+          }
+        }
+      }
+    },
+    "Debug Liens" : {
+
+    },
+    "Debug Liens Personnalisés" : {
+
+    },
+    "Désactiver" : {
+
+    },
+    "Détails" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Details"
+          }
+        }
+      }
+    },
+    "Détection" : {
+
+    },
+    "Documentation" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Documentation"
+          }
+        }
+      }
+    },
+    "Données disponibles" : {
+
+    },
+    "Dosage" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dose"
+          }
+        }
+      }
+    },
+    "Enregistrer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Register"
+          }
+        }
+      }
+    },
+    "Entrez le nom exact du raccourci à exécuter. Créez-le dans l'app Raccourcis si nécessaire." : {
+
+    },
+    "Erreur" : {
+
+    },
+    "Événement" : {
+
+    },
+    "Exemples" : {
+
+    },
+    "Fermer" : {
+
+    },
+    "Fonctionnalités" : {
+
+    },
+    "Horoscope quotidien" : {
+
+    },
+    "Icône de partage" : {
+
+    },
+    "Informations" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Information"
+          }
+        }
+      }
+    },
+    "Informations du médicament" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drug information"
+          }
+        }
+      }
+    },
+    "Key 1" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Key 1"
+          }
+        }
+      }
+    },
+    "L'horoscope quotidien s'affiche en bas de votre vue principale." : {
+
+    },
+    "L'icône 👥 apparaît à côté des rappels et événements partagés." : {
+
+    },
+    "L'icône 👥 apparaît automatiquement à côté des événements et rappels provenant de calendriers ou listes partagés." : {
+
+    },
+    "La pensée du jour s'affiche en haut de votre vue principale." : {
+
+    },
+    "Les liens désactivés sont conservés mais ne seront pas utilisés." : {
+
+    },
+    "Les liens resteront uniquement sur cet appareil." : {
+
+    },
+    "Lien actif" : {
+
+    },
+    "Liens actifs" : {
+
+    },
+    "Liens personnalisés" : {
+
+    },
+    "Liste de rappels" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remindre List"
+          }
+        }
+      }
+    },
+    "Liste:" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "List:"
+          }
+        }
+      }
+    },
+    "Listes de rappels" : {
+
+    },
+    "Listes_de_rappels" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reminders list"
+          }
+        }
+      }
+    },
+    "loading" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading..."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chargement..."
+          }
+        }
+      }
+    },
+    "Logs verbeux Calendriers/Rappels" : {
+
+    },
+    "Logs verbeux Photos" : {
+
+    },
+    "MATCH ✓" : {
+
+    },
+    "Médicament" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drug"
+          }
+        }
+      }
+    },
+    "Modifier le lien" : {
+
+    },
+    "Mot-clé : \"%@\" — %@" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Mot-clé : \"%1$@\" — %2$@"
+          }
+        }
+      }
+    },
+    "Mot-clé à détecter" : {
+
+    },
+    "Mots-clés de détection" : {
+
+    },
+    "MyDay a besoin de cette autorisation pour lire vos calendriers et afficher vos événements du jour. iOS ne propose pas d'accès en lecture seule au Calendrier, mais l'application ne créera, modifiera ni supprimera aucun événement." : {
+
+    },
+    "MyDay a besoin de l'autorisation complète sur vos rappels pour les afficher et marquer des rappels comme complétés. Aucune nouvelle liste ne sera créée par l'application." : {
+
+    },
+    "MyDay affiche VOS informations et seulement pour Vous!  Accordez l'accès à vos données en toute confiance puisqu'elles demeurent sur votre appareil !" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MyDay displays YOUR information and only for you !  Allow access to your data since it remains on your device"
+          }
+        }
+      }
+    },
+    "Nettoyer les liens de test" : {
+
+    },
+    "newCalTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🗓️ New calendar entry"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "🗓️ Nouvelle entrée Calendrier"
+          }
+        }
+      }
+    },
+    "newEventTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "📝 New reminder"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "📝 Nouveau rappel"
+          }
+        }
+      }
+    },
+    "noAlbum" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No album"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas d’album"
+          }
+        }
+      }
+    },
+    "noEvents" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No events or reminders today."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun événement ni rappel ce jour-là."
+          }
+        }
+      }
+    },
+    "Nom du médicament" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drug name"
+          }
+        }
+      }
+    },
+    "Nom du raccourci" : {
+
+    },
+    "Nombre de liens" : {
+
+    },
+    "Notes (optionnel)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notes"
+          }
+        }
+      }
+    },
+    "Nouveau lien" : {
+
+    },
+    "OK" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
+    "Ouvrir l'app Raccourcis" : {
+
+    },
+    "Ouvrir Santé" : {
+
+    },
+    "Pas d'icône" : {
+
+    },
+    "Passer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Skip"
+          }
+        }
+      }
+    },
+    "Pensée du jour" : {
+
+    },
+    "permissions.health" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Access to health information"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permission Santé"
+          }
+        }
+      }
+    },
+    "permissions.photos" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Access to Pictures"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accès aux photos"
+          }
+        }
+      }
+    },
+    "permissions.reminders" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Access to Reminders"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accès aux rappels"
+          }
+        }
+      }
+    },
+    "permissions.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autorisations required"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autorisation requises"
+          }
+        }
+      }
+    },
+    "permissionsAllow" : {
+      "comment" : "Texte du bouton pour autoriser une permission",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autorize"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Autoriser"
+          }
+        }
+      }
+    },
+    "permissionscalendar" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Access to Calendar"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accès aux calendrier"
+          }
+        }
+      }
+    },
+    "permissionsCalendar" : {
+      "comment" : "Libellé de permission pour le calendrier",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calendar access"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accès aux calendriers"
+          }
+        }
+      }
+    },
+    "permissionsContinue" : {
+      "comment" : "Texte du bouton pour continuer après avoir accordé les permissions",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continue"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Continuer"
+          }
+        }
+      }
+    },
+    "permissionsHealth" : {
+      "comment" : "Libellé de permission pour la santé",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Access some health information"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accès à certaines données Santé"
+          }
+        }
+      }
+    },
+    "permissionsPhotos" : {
+      "comment" : "Libellé de permission pour les photos",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Access to photo albums"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accès aux albums photos"
+          }
+        }
+      }
+    },
+    "permissionsReminders" : {
+      "comment" : "Libellé de permission pour les rappels",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Access to reminders"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Accès aux rappels"
+          }
+        }
+      }
+    },
+    "permissionsTitle" : {
+      "comment" : "Titre de la vue des permissions",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Access requests"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Demande d’Accès"
+          }
+        }
+      }
+    },
+    "Photo %lld/%lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Photo %1$lld/%2$lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Photo %1$lld/%2$lld"
+          }
+        }
+      }
+    },
+    "Photos" : {
+
+    },
+    "Pour activer les permissions de santé:\n\n1. Ouvrez l'app Santé\n2. Allez dans Partage\n3. Sélectionnez Apps\n4. Trouvez et ouvrez MyDay\n5. Activez les données souhaitées" : {
+
+    },
+    "Pour afficher les pas, la distance parcourue pendant la journée et les calories dépensées, MyDay a besoin de l'autorisation d'accéder aux données Santé. Aucune mise à jour des données de Santé ne sera effectuée." : {
+
+    },
+    "Pour afficher vos photos sur l'écran principal, MyDay a besoin de l'autorisation d'accéder à votre bibliothèque de photos. Aucune photo ne sera modifiée ou supprimée." : {
+
+    },
+    "Pour qu'un calendrier ou une liste soit reconnu comme partagé, son nom doit contenir l'un des mots-clés suivants :" : {
+
+    },
+    "Pour vous offrir la meilleure expérience, nous avons besoin d'accéder à ces fonctionnalités." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To offer you the best experience we need these functionality"
+          }
+        }
+      }
+    },
+    "Précédent" : {
+
+    },
+    "Premier lien" : {
+
+    },
+    "Pris à" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Taken at"
+          }
+        }
+      }
+    },
+    "Raccourcis recommandés" : {
+
+    },
+    "Rappel" : {
+
+    },
+    "Recharger" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reload"
+          }
+        }
+      }
+    },
+    "Réglages" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        }
+      }
+    },
+    "Réinitialiser l'onboarding" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reinitialize OnBoarding"
+          }
+        }
+      }
+    },
+    "Réinitialiser tout" : {
+
+    },
+    "Santé" : {
+
+    },
+    "save" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✅ Save"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✅ Enregistrer"
+          }
+        }
+      }
+    },
+    "Sélectionnez les calendriers que vous souhaitez afficher dans MyDay." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select the calendars you wish to see"
+          }
+        }
+      }
+    },
+    "Sélectionnez les listes de rappels à afficher" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select the reminder list you wish to see"
+          }
+        }
+      }
+    },
+    "Sélectionnez les listes de rappels que vous souhaitez voir dans MyDay." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select the reminder list you wish to see"
+          }
+        }
+      }
+    },
+    "shortcuts://run-shortcut?name=%@" : {
+
+    },
+    "Signe actuel" : {
+
+    },
+    "source: %@" : {
+
+    },
+    "source: zenquotes.io/api/random" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "source: zenquotes.io/api/random"
+          }
+        }
+      }
+    },
+    "Sources de données" : {
+
+    },
+    "Suivant" : {
+
+    },
+    "Synchronisation iCloud" : {
+
+    },
+    "Synchroniser entre tous vos appareils" : {
+
+    },
+    "Tapez \"Configurer\" pour créer le lien dans MyDay. Chaque raccourci doit préalablement exister dans votre app Raccourcis." : {
+
+    },
+    "Télécharger" : {
+
+    },
+    "Terminé" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "End"
+          }
+        }
+      }
+    },
+    "Terminer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "End"
+          }
+        }
+      }
+    },
+    "Test de matching" : {
+
+    },
+    "Test de raccourci" : {
+
+    },
+    "Tester l'ouverture" : {
+
+    },
+    "Tester le matching" : {
+
+    },
+    "Tester le raccourci" : {
+
+    },
+    "title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Title"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Titre"
+          }
+        }
+      }
+    },
+    "Titre à tester" : {
+
+    },
+    "Titre exact" : {
+
+    },
+    "Total: %lld calendriers" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total: %lld calendars"
+          }
+        }
+      }
+    },
+    "Tout désélectionner" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select all"
+          }
+        }
+      }
+    },
+    "Tout sélectionner" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unselect all"
+          }
+        }
+      }
+    },
+    "Toutes vos données restent sur votre appareil" : {
+
+    },
+    "Type de correspondance" : {
+
+    },
+    "Une pensée du jour ainsi qu'une de vos photos vous mettrons un sourire pour commencer votre journée!" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A thought of the day and one of your pictures will make you start your day with a smile"
+          }
+        }
+      }
+    },
+    "URLs générées" : {
+
+    },
+    "Vérifiez que le raccourci fonctionne correctement." : {
+
+    },
+    "Vos calendriers" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your Calendars"
+          }
+        }
+      }
+    },
+    "Vos liens seront synchronisés automatiquement avec iCloud sur tous vos appareils connectés." : {
+
+    },
+    "Vos rappels" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your reminders"
+          }
+        }
+      }
+    },
+    "Votre journée, organisée simplement" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your day simply organized "
+          }
+        }
+      }
+    },
+    "Vous pourrez activer ces permissions plus tard dans les Réglages" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You will be able to change the permissions in settings"
+          }
+        }
+      }
+    },
+    "Voyez vos progrès dans Votre journée!" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See your progress throughout the day"
+          }
+        }
+      }
+    },
+    "welcome_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bienvenue"
+          }
+        }
+      }
+    }
   },
   "version" : "1.0"
 }

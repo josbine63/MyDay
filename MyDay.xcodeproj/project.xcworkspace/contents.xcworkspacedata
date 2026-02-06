@@ -4,4 +4,10 @@
    <FileRef
       location = "self:">
    </FileRef>
+   <FileRef
+      location = "group:HEALTH_PERMISSION_FIX.md">
+   </FileRef>
+   <FileRef
+      location = "group:HEALTH_SETTINGS_IMPROVEMENT.md">
+   </FileRef>
 </Workspace>

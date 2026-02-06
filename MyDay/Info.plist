@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+		<string>fr</string>
+	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>x-apple-reminderkit</string>
+		<string>calshow</string>
+		<string>x-apple-health://MedicationsHealthAppPlugin.healthplugin</string>
+		<string>x-apple-fitness://activity</string>
+		<string>x-apple-fitness://</string>
+		<string>x-apple-weather://</string>
+		<string>weather://</string>
+		<string>shortcuts://run-shortcut?name=fitness</string>
+		<string>x-apple-health://</string>
+	</array>
+</dict>
+</plist>

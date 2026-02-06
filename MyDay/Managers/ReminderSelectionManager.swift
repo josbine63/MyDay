@@ -1,58 +1,54 @@
 import Foundation
 import EventKit
+import os.log
 
 @MainActor
 class ReminderSelectionManager: ObservableObject {
-    @Published var availableReminderLists: [EKCalendar] = []
-    @Published var selectedReminderListIDs: Set<String> = []
+    @Published var selectableReminderLists: [SelectableReminderList] = []
 
-    private let eventStore = EKEventStore()
-    private let userDefaults = UserDefaults(suiteName: "group.com.josblais.myday")
-    private let reminderIDsKey = "selectedReminderListIDs"
+    private let eventStore = SharedEventStore.shared
+    private let userDefaults = UserDefaults.appGroup
+    private let selectionKey = UserDefaultsKeys.selectedReminderLists
 
-    init() {
-        Task {
-            await requestAccessAndLoadReminderLists()
-        }
-    }
-
-    func requestAccessAndLoadReminderLists() async {
-        let granted = try? await eventStore.requestAccess(to: .reminder)
-        if granted == true {
-            loadReminderLists()
-        } else {
-            print("⛔️ Accès aux rappels refusé.")
-        }
-    }
-
-    func loadReminderLists() {
-        let lists = eventStore.calendars(for: .reminder)
-        availableReminderLists = lists
-
-        // Charger la sélection précédente
-        if let savedIDs = userDefaults?.array(forKey: reminderIDsKey) as? [String] {
-            selectedReminderListIDs = Set(savedIDs)
-        } else {
-            // Par défaut, tout sélectionner
-            selectedReminderListIDs = Set(lists.map { $0.calendarIdentifier })
+    func toggleSelection(for calendarID: String) {
+        if let index = selectableReminderLists.firstIndex(where: { $0.id == calendarID }) {
+            selectableReminderLists[index].isSelected.toggle()
             saveSelection()
         }
     }
 
-    func toggleSelection(for list: EKCalendar) {
-        if selectedReminderListIDs.contains(list.calendarIdentifier) {
-            selectedReminderListIDs.remove(list.calendarIdentifier)
-        } else {
-            selectedReminderListIDs.insert(list.calendarIdentifier)
-        }
-        saveSelection()
-    }
-
-    func isSelected(_ list: EKCalendar) -> Bool {
-        selectedReminderListIDs.contains(list.calendarIdentifier)
-    }
-
     private func saveSelection() {
-        userDefaults?.set(Array(selectedReminderListIDs), forKey: reminderIDsKey)
+        let ids = selectableReminderLists.filter { $0.isSelected }.map { $0.id }
+        Logger.reminder.info("💾 Sauvegarde des rappels sélectionnés : \(ids, privacy: .public)")
+        userDefaults.set(ids, forKey: selectionKey)
+    }
+
+    func loadReminderLists() async {
+        Logger.reminder.info("📂 Début chargement des rappels")
+        
+        let calendars = eventStore.calendars(for: .reminder)
+        let savedIDs = Set(userDefaults.stringArray(forKey: selectionKey) ?? [])
+        
+        Logger.reminder.info("📂 \(calendars.count) liste(s) de rappels trouvée(s)")
+
+        selectableReminderLists = calendars.map {
+            SelectableReminderList(calendar: $0, isSelected: savedIDs.contains($0.calendarIdentifier))
+        }
+        
+        // Si aucune liste n'est sélectionnée, sélectionner toutes par défaut
+        if savedIDs.isEmpty && !selectableReminderLists.isEmpty {
+            selectableReminderLists = selectableReminderLists.map {
+                var list = $0
+                list.isSelected = true
+                return list
+            }
+            saveSelection()
+        }
+        
+        Logger.reminder.info("✅ Rappels chargés")
+    }
+
+    var selectedReminderListIDs: Set<String> {
+        Set(selectableReminderLists.filter { $0.isSelected }.map { $0.id })
     }
 }

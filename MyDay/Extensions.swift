@@ -1,3 +1,12 @@
+//
+//  Extensions.swift
+//  MyDay
+//
+//  Created by Josblais on 2025-05-11.
+//
+import Foundation
+import CryptoKit
+
 // MARK: - Extensions
 
 extension String {
@@ -14,8 +23,28 @@ extension String {
         return uuid.uuidString
     }
 }
-extension UserDefaults {
-    static var appGroup: UserDefaults {
-        return UserDefaults(suiteName: "group.com.josblais.myday")!
+
+/* extension EventStatusManager {
+    func completedEvents(forDateKey key: String) -> Set<UUID> {
+        return completedEvents[key] ?? []
     }
 }
+*/
+
+import UIKit
+
+extension UserDefaults {
+    func set(_ image: UIImage, forKey key: String) {
+        if let data = image.pngData() {
+            set(data, forKey: key)
+        }
+    }
+
+    func image(forKey key: String) -> UIImage? {
+        if let data = data(forKey: key) {
+            return UIImage(data: data)
+        }
+        return nil
+    }
+}
+

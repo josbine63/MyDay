@@ -1,10 +1,18 @@
+//
+//  AppGroupStorage.swift
+//  MyDay
+//
+//  Created by Josblais on 2025-05-09.
+//
+
+
 import Foundation
 
 @propertyWrapper
 struct AppGroupStorage<T: Codable> {
     private let key: String
     private let defaultValue: T
-    private let userDefaults = UserDefaults(suiteName: "group.com.josblais.myday")!
+    private let userDefaults: UserDefaults
 
     var wrappedValue: T {
         get {
@@ -32,5 +40,7 @@ struct AppGroupStorage<T: Codable> {
     init(wrappedValue: T, key: String) {
         self.key = key
         self.defaultValue = wrappedValue
+        // Use AppGroup.userDefaults which safely falls back to .standard if unavailable
+        self.userDefaults = AppGroup.userDefaults
     }
 }

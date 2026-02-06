@@ -1,13 +1,14 @@
 
 import Foundation
 import EventKit
+import os.log
 
 @MainActor
 class CalendarManager: ObservableObject {
     @Published var events: [EKEvent] = []
     @Published var reminders: [EKReminder] = []
 
-    let eventStore = EKEventStore()
+    let eventStore = SharedEventStore.shared
 
     func requestAccessToEvents() {
         eventStore.requestFullAccessToEvents { granted, error in
@@ -16,7 +17,7 @@ class CalendarManager: ObservableObject {
                     await self.fetchEvents(for: Date())
                 }
             } else {
-                print("Accès refusé au calendrier")
+                Logger.calendar.error("Accès refusé au calendrier")
             }
         }
     }
@@ -26,7 +27,7 @@ class CalendarManager: ObservableObject {
         let calendars = eventStore.calendars(for: .event)
         let startDate = Calendar.current.startOfDay(for: date)
         guard let endDate = Calendar.current.date(byAdding: .day, value: 1, to: startDate) else {
-            print("❌ Erreur : endDate invalide")
+            Logger.calendar.error("❌ Erreur : endDate invalide")
             return
         }
 
@@ -48,7 +49,7 @@ class CalendarManager: ObservableObject {
             }
             self.reminders = fetched
         } catch {
-            print("❌ Erreur lors de la lecture des rappels : \(error)")
+            Logger.calendar.error("❌ Erreur lors de la lecture des rappels : \(error.localizedDescription)")
         }
     }
 }
