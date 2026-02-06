@@ -436,20 +436,32 @@ struct ContentView: View {
     
     var headerSection: some View {
         VStack(spacing: 4) {
-            // ✨ Bouton météo - Clic sur le jour de la semaine
-            Button(action: {
-                if let url = URL(string: "weather://"),
-                   UIApplication.shared.canOpenURL(url) {
-                    UIApplication.shared.open(url)
+            // ✨ Jour de la semaine - Clic = retour aujourd'hui, Appui long = météo
+            let userLocale = Locale(identifier: userSettings.preferences.language)
+            Text(getDay(from: selectedDate, locale: userLocale))
+                .font(.largeTitle)
+                .bold()
+                .foregroundColor(.primary)
+                .onTapGesture {
+                    // 🚀 Clic simple = retour à aujourd'hui
+                    withAnimation {
+                        selectedDate = Date()
+                        EventCacheManager.shared.invalidateCache(for: selectedDate)
+                        fetchAgenda(for: selectedDate,
+                                  calendarSelectionManager: calendarSelectionManager,
+                                  reminderSelectionManager: reminderSelectionManager)
+                        if userSettings.preferences.showHealth {
+                            healthManager.fetchData(for: selectedDate)
+                        }
+                    }
                 }
-            }) {
-                let userLocale = Locale(identifier: userSettings.preferences.language)
-                Text(getDay(from: selectedDate, locale: userLocale))
-                    .font(.largeTitle)
-                    .bold()
-                    .foregroundColor(.primary)
-            }
-            .buttonStyle(PlainButtonStyle())
+                .onLongPressGesture {
+                    // 🌤️ Appui long = ouvrir météo
+                    if let url = URL(string: "weather://"),
+                       UIApplication.shared.canOpenURL(url) {
+                        UIApplication.shared.open(url)
+                    }
+                }
             
             // ✨ Date avec flèches pour DatePicker et Vue Semaine
             HStack(spacing: 8) {
@@ -483,24 +495,6 @@ struct ContentView: View {
             }
         }
         .frame(maxWidth: .infinity)
-        // ✨ Appui long pour revenir à aujourd'hui
-        .simultaneousGesture(
-            LongPressGesture(minimumDuration: 0.5)
-                .onEnded { _ in
-                    withAnimation {
-                        selectedDate = Date()
-                        // ✅ Invalider le cache et recharger
-                        EventCacheManager.shared.invalidateCache(for: selectedDate)
-                        fetchAgenda(for: selectedDate,
-                                  calendarSelectionManager: calendarSelectionManager,
-                                  reminderSelectionManager: reminderSelectionManager)
-                        // ✅ Mettre à jour les statistiques HealthKit
-                        if userSettings.preferences.showHealth {
-                            healthManager.fetchData(for: selectedDate)
-                        }
-                    }
-                }
-        )
     }
     
     // MARK: - controlButtons supprimé - Actions déplacées dans le header et footer
