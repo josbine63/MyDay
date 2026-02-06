@@ -636,11 +636,26 @@ struct ContentView: View {
                             }
                             .frame(width: 60, alignment: .leading)
                             
-                            Button(action: { 
+                            HStack(spacing: 4) {
+                                Text(item.title)
+                                    .strikethrough(statusManager.isCompleted(id: item.id.uuidString), color: .gray)
+                                    .foregroundColor(statusManager.isCompleted(id: item.id.uuidString) ? .gray : .primary)
+                                
+                                // 🔗 Badge pour indiquer un lien personnalisé
+                                if customLinkManager.hasLink(for: item.title) {
+                                    Image(systemName: "link.circle.fill")
+                                        .font(.caption2)
+                                        .foregroundColor(.purple)
+                                }
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                // 👆 Clic court = Action personnalisée ou app par défaut
                                 #if DEBUG
                                 Logger.app.debug("Agenda tap: title='\(item.title)' hasLink=\(customLinkManager.hasLink(for: item.title))")
                                 #endif
-                                // ✅ NOUVEAU : Vérifier d'abord s'il y a un lien personnalisé
+                                // ✅ Vérifier d'abord s'il y a un lien personnalisé
                                 if !customLinkManager.openShortcut(for: item.title) {
                                     #if DEBUG
                                     Logger.app.debug("Agenda tap: no custom link executed, opening default app for event=\(item.isEvent)")
@@ -648,21 +663,21 @@ struct ContentView: View {
                                     // Fallback : ouvrir l'app par défaut
                                     openCorrespondingApp(for: item)
                                 }
-                            }) {
-                                HStack(spacing: 4) {
-                                    Text(item.title)
-                                        .strikethrough(statusManager.isCompleted(id: item.id.uuidString), color: .gray)
-                                        .foregroundColor(statusManager.isCompleted(id: item.id.uuidString) ? .gray : .primary)
-                                    
-                                    // 🔗 Badge pour indiquer un lien personnalisé
-                                    if customLinkManager.hasLink(for: item.title) {
-                                        Image(systemName: "link.circle.fill")
-                                            .font(.caption2)
-                                            .foregroundColor(.purple)
+                            }
+                            .onLongPressGesture {
+                                // ⏱️ Appui long = Ouvrir directement Calendrier ou Rappels
+                                Logger.app.debug("📅 Appui long détecté - ouverture app native...")
+                                if item.isEvent {
+                                    // Ouvrir l'app Calendrier pour les événements
+                                    let calendarURL = URL(string: "calshow:\(item.date.timeIntervalSinceReferenceDate)")!
+                                    UIApplication.shared.open(calendarURL)
+                                } else {
+                                    // Ouvrir l'app Rappels pour les rappels
+                                    if let remindersURL = URL(string: "x-apple-reminderkit://") {
+                                        UIApplication.shared.open(remindersURL)
                                     }
                                 }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            }.buttonStyle(.plain)
+                            }
                             
                             Text(item.date.formatted(date: .omitted, time: .shortened))
                                 .font(.subheadline)
