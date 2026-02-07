@@ -1181,12 +1181,12 @@ struct ContentView: View {
             
             // Rafraîchir l'agenda via notification
             Task { @MainActor in
-                // Invalider le cache sur le MainActor
-                EventCacheManager.shared.invalidateCache(for: Date())
+                // Invalider le cache pour TOUTES les dates (pas seulement aujourd'hui)
+                EventCacheManager.shared.invalidateAllCache()
                 
                 // Notifier la vue de se rafraîchir
                 NotificationCenter.default.post(name: .needsAgendaRefresh, object: nil)
-                Logger.reminder.info("✅ Notification de rafraîchissement envoyée")
+                Logger.reminder.info("✅ Notification de rafraîchissement envoyée - cache complet invalidé")
             }
         }
     }
