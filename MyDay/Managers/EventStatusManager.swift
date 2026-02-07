@@ -36,11 +36,15 @@ class EventStatusManager: ObservableObject {
     // MARK: - Public API
 
     func toggleEventCompletion(id: String) {
-        if completedEventIDs.contains(id) {
+        let wasCompleted = completedEventIDs.contains(id)
+        if wasCompleted {
             completedEventIDs.remove(id)
+            print("✅ EventStatusManager: Événement \(id) DÉCOCHÉ")
         } else {
             completedEventIDs.insert(id)
+            print("✅ EventStatusManager: Événement \(id) COCHÉ")
         }
+        print("📊 Total événements complétés: \(completedEventIDs.count)")
         saveToStorage()
     }
 
@@ -66,15 +70,19 @@ class EventStatusManager: ObservableObject {
 
     private func saveToStorage() {
         let idsArray = Array(completedEventIDs)
+        print("💾 Sauvegarde de \(idsArray.count) statuts...")
         userDefaults.set(idsArray, forKey: key)
         iCloudStore.set(idsArray, forKey: key)
-        iCloudStore.synchronize()
+        let synced = iCloudStore.synchronize()
+        print("☁️ iCloud sync: \(synced ? "✅ OK" : "❌ ÉCHEC")")
     }
 
     private func loadFromStorage() {
         let cloudArray = (iCloudStore.array(forKey: key) as? [String]) ?? []
         let localArray = (userDefaults.array(forKey: key) as? [String]) ?? []
+        print("📥 Chargement statuts - iCloud: \(cloudArray.count), Local: \(localArray.count)")
         let merged = Set(cloudArray).union(localArray)
+        print("📊 Total après fusion: \(merged.count)")
         DispatchQueue.main.async {
             self.completedEventIDs = merged
         }
@@ -93,10 +101,15 @@ class EventStatusManager: ObservableObject {
     }
     
     @objc private func iCloudDidChange(notification: Notification) {
+        print("🔔 iCloud a changé - notification reçue!")
+        if let userInfo = notification.userInfo {
+            print("📦 UserInfo: \(userInfo)")
+        }
         loadFromStorage()
         
         // 🔔 Notifier les vues que les statuts ont changé
         DispatchQueue.main.async {
+            print("📢 Envoi notification .eventStatusDidChange aux vues")
             NotificationCenter.default.post(name: .eventStatusDidChange, object: nil)
         }
     }
