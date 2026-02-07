@@ -94,6 +94,11 @@ class EventStatusManager: ObservableObject {
     
     @objc private func iCloudDidChange(notification: Notification) {
         loadFromStorage()
+        
+        // 🔔 Notifier les vues que les statuts ont changé
+        DispatchQueue.main.async {
+            NotificationCenter.default.post(name: .eventStatusDidChange, object: nil)
+        }
     }
     
     // MARK: - Cleanup

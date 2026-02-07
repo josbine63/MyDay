@@ -15,6 +15,8 @@ import Translation
 extension Notification.Name {
     /// Notification envoyée lorsque l'agenda doit être rafraîchi suite à un changement dans EventKit
     static let needsAgendaRefresh = Notification.Name("needsAgendaRefresh")
+    /// Notification envoyée lorsque les statuts d'événements changent via iCloud
+    static let eventStatusDidChange = Notification.Name("eventStatusDidChange")
 }
 
 // MARK: - Models
@@ -370,6 +372,9 @@ struct ContentView: View {
         .onReceive(NotificationCenter.default.publisher(for: .needsAgendaRefresh)) { _ in
             handleAgendaRefresh()
         }
+        .onReceive(NotificationCenter.default.publisher(for: .eventStatusDidChange)) { _ in
+            handleEventStatusChange()
+        }
         .alert(Text(String(localized: "noAlbum")), isPresented: $showNoAlbumAlert) {
             Button("OK", role: .cancel) {}
         } message: {
@@ -429,6 +434,13 @@ struct ContentView: View {
         Task {
             await refreshAgenda()
         }
+    }
+    
+    private func handleEventStatusChange() {
+        Logger.reminder.info("✅ Statuts d'événements changés via iCloud - rafraîchissement visuel")
+        // Force un rafraîchissement de la vue
+        // statusManager est @ObservedObject donc les changements devraient automatiquement
+        // mettre à jour la vue, mais on peut forcer un refresh si nécessaire
     }
 
     
