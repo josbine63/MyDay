@@ -81,7 +81,8 @@ final class EventCacheManager: ObservableObject {
         eventCache.removeValue(forKey: key)
         reminderCache.removeValue(forKey: key)
         cacheExpiration.removeValue(forKey: key)
-        logger.debug("🗑️ Cache invalidé pour \(key)")
+        self.cacheVersion += 1 // ✨ Notifier les observateurs du changement
+        logger.debug("🗑️ Cache invalidé pour \(key) (version: \(self.cacheVersion))")
     }
     
     /// Invalide tout le cache
@@ -89,7 +90,8 @@ final class EventCacheManager: ObservableObject {
         eventCache.removeAll()
         reminderCache.removeAll()
         cacheExpiration.removeAll()
-        logger.info("🗑️ Tout le cache a été invalidé")
+        self.cacheVersion += 1 // ✨ Notifier les observateurs du changement
+        logger.info("🗑️ Tout le cache a été invalidé (version: \(self.cacheVersion))")
     }
     
     /// Nettoie les caches expirés

@@ -1179,8 +1179,11 @@ struct ContentView: View {
         ) { _ in
             Logger.reminder.info("🔔 Changement détecté dans EventKit - Mise à jour de l'agenda")
             
-            // Rafraîchir l'agenda via notification
+            // Rafraîchir l'agenda via notification avec un léger délai pour laisser iCloud se synchroniser
             Task { @MainActor in
+                // Petit délai pour laisser EventKit finaliser la synchronisation
+                try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 secondes
+                
                 // Invalider le cache pour TOUTES les dates (pas seulement aujourd'hui)
                 EventCacheManager.shared.invalidateAllCache()
                 
