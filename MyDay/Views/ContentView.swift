@@ -650,8 +650,8 @@ struct ContentView: View {
                             
                             HStack(spacing: 4) {
                                 Text(item.title)
-                                    .strikethrough(statusManager.isCompleted(id: item.id.uuidString), color: .gray)
-                                    .foregroundColor(statusManager.isCompleted(id: item.id.uuidString) ? .gray : .primary)
+                                    .strikethrough(isItemCompleted(item), color: .gray)
+                                    .foregroundColor(isItemCompleted(item) ? .gray : .primary)
                                 
                                 // 🔗 Badge pour indiquer un lien personnalisé
                                 if customLinkManager.hasLink(for: item.title) {
@@ -698,19 +698,7 @@ struct ContentView: View {
                             // ✅ Icône de partage à la fin avec crochet si complété
                             if item.isShared {
                                 Button(action: {
-                                    statusManager.toggleEventCompletion(id: item.id.uuidString)
-                                    
-                                    // 🚀 OPTIMISATION: Utiliser l'icône précomputée
-                                    if item.icon == "💊" {
-                                        if let healthURL = URL(string: "x-apple-health://MedicationsHealthAppPlugin.healthplugin") {
-                                            UIApplication.shared.open(healthURL)
-                                        }
-                                    }
-                                    
-                                    if !item.isEvent, item.reminderID != nil {
-                                        completeAssociatedReminder(for: item)
-                                    }
-                                    saveNextAgendaItemForWidget()
+                                    toggleCompletion(for: item)
                                 }) {
                                     ZStack(alignment: .topTrailing) {
                                         Image(systemName: "person.2.fill")
@@ -718,7 +706,7 @@ struct ContentView: View {
                                             .foregroundColor(.blue)
                                         
                                         // Petit crochet en overlay si complété
-                                        if statusManager.isCompleted(id: item.id.uuidString) {
+                                        if isItemCompleted(item) {
                                             Image(systemName: "checkmark.circle.fill")
                                                 .font(.caption2)
                                                 .foregroundColor(.green)
@@ -735,22 +723,10 @@ struct ContentView: View {
                             } else {
                                 // Pour les items non partagés, icône de checkmark normale
                                 Button(action: {
-                                    statusManager.toggleEventCompletion(id: item.id.uuidString)
-                                    
-                                    // 🚀 OPTIMISATION: Utiliser l'icône précomputée
-                                    if item.icon == "💊" {
-                                        if let healthURL = URL(string: "x-apple-health://MedicationsHealthAppPlugin.healthplugin") {
-                                            UIApplication.shared.open(healthURL)
-                                        }
-                                    }
-                                    
-                                    if !item.isEvent, item.reminderID != nil {
-                                        completeAssociatedReminder(for: item)
-                                    }
-                                    saveNextAgendaItemForWidget()
+                                    toggleCompletion(for: item)
                                 }) {
-                                    Image(systemName: statusManager.isCompleted(id: item.id.uuidString) ? "checkmark.circle.fill" : "checkmark.circle")
-                                        .foregroundColor(statusManager.isCompleted(id: item.id.uuidString) ? .green : .gray)
+                                    Image(systemName: isItemCompleted(item) ? "checkmark.circle.fill" : "checkmark.circle")
+                                        .foregroundColor(isItemCompleted(item) ? .green : .gray)
                                 }
                                 .buttonStyle(.plain)
                             }
@@ -1701,7 +1677,7 @@ struct ContentView: View {
         }
         
         func toggleCompletion(for item: AgendaItem) {
-            statusManager.toggleEventCompletion(id: item.id.uuidString)
+            Logger.calendar.debug("🔄 toggleCompletion appelé - isEvent: \(item.isEvent), eventID: \(item.eventID ?? "nil"), reminderID: \(item.reminderID ?? "nil")")
             
             // 🚀 OPTIMISATION: Utiliser l'icône précomputée
             if item.icon == "💊" {
@@ -1710,8 +1686,23 @@ struct ContentView: View {
                 }
             }
             
-            if !item.isEvent, item.reminderID != nil {
-                completeAssociatedReminder(for: item)
+            // Gestion différente selon le type d'item
+            if item.isEvent {
+                Logger.calendar.info("📅 Événement calendrier détecté - Traitement spécial EventKit")
+                // ✅ Pour les événements calendrier : marquer dans EventKit (synchronisation iCloud)
+                let isCurrentlyCompleted = isItemCompleted(item)
+                completeCalendarEvent(for: item, markAsComplete: !isCurrentlyCompleted)
+                
+                // Garder aussi dans statusManager pour compatibilité locale
+                statusManager.toggleEventCompletion(id: item.id.uuidString)
+            } else {
+                Logger.calendar.info("📋 Rappel détecté - Traitement standard")
+                // ✅ Pour les rappels : marquer directement dans EventKit (comme avant)
+                statusManager.toggleEventCompletion(id: item.id.uuidString)
+                
+                if item.reminderID != nil {
+                    completeAssociatedReminder(for: item)
+                }
             }
             
             saveNextAgendaItemForWidget()
@@ -1752,6 +1743,118 @@ struct ContentView: View {
             } else {
                 print("❌ Rappel introuvable avec l’ID: \(reminderID)")
             }
+        }
+        
+        /// Marque un événement calendrier comme complété en utilisant le champ URL pour la synchronisation multi-utilisateurs
+        func completeCalendarEvent(for item: AgendaItem, markAsComplete: Bool) {
+            Logger.calendar.info("🎯 completeCalendarEvent appelé - titre: '\(item.title)', markAsComplete: \(markAsComplete)")
+            
+            // Chercher l'événement par titre et date au lieu d'utiliser l'ID (qui peut changer)
+            let startDate = Calendar.current.startOfDay(for: item.date)
+            let endDate = Calendar.current.date(bySettingHour: 23, minute: 59, second: 59, of: item.date) ?? startDate
+            
+            let selectedCalendarIDs = calendarSelectionManager.selectedCalendarIDs
+            let calendars = eventStore.calendars(for: .event).filter {
+                selectedCalendarIDs.contains($0.calendarIdentifier)
+            }
+            
+            let predicate = eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: calendars)
+            let events = eventStore.events(matching: predicate)
+            
+            // Trouver l'événement correspondant par titre et date
+            guard let event = events.first(where: { $0.title == item.title && Calendar.current.isDate($0.startDate, equalTo: item.date, toGranularity: .minute) }) else {
+                Logger.calendar.error("❌ Événement introuvable: '\(item.title)' à \(item.date)")
+                return
+            }
+            
+            Logger.calendar.debug("🔑 Événement trouvé: \(event.title) - ID: \(event.eventIdentifier)")
+            
+            if markAsComplete {
+                // Créer URL de complétion avec timestamp ISO 8601
+                let now = Date()
+                let isoFormatter = ISO8601DateFormatter()
+                isoFormatter.formatOptions = [.withInternetDateTime]
+                let timestamp = isoFormatter.string(from: now)
+                
+                let completionURL = URL(string: "myday://completed/\(timestamp)")
+                event.url = completionURL
+                Logger.calendar.info("✅ Ajout URL de complétion: \(completionURL?.absoluteString ?? "nil")")
+            } else {
+                // Retirer l'URL de complétion
+                event.url = nil
+                Logger.calendar.info("🔄 Retrait URL de complétion de l'événement: \(event.title)")
+            }
+            
+            // Sauvegarder dans EventKit (cela va synchroniser via iCloud vers TOUS les utilisateurs)
+            do {
+                try eventStore.save(event, span: .thisEvent)
+                Logger.calendar.info("💾 Événement sauvegardé dans EventKit - synchronisation iCloud multi-utilisateurs en cours...")
+                
+                // La notification .EKEventStoreChanged sera déclenchée automatiquement
+                // et tous les utilisateurs (même avec des comptes iCloud différents) recevront la mise à jour
+            } catch {
+                Logger.calendar.error("❌ Erreur de sauvegarde EventKit: \(error.localizedDescription)")
+            }
+        }
+        
+        /// Vérifie si un événement/rappel est complété
+        /// Pour les événements calendrier, vérifie l'URL EventKit (synchronisation multi-utilisateurs)
+        /// Pour les rappels, vérifie dans EventStatusManager
+        func isItemCompleted(_ item: AgendaItem) -> Bool {
+            // Pour les événements calendrier, vérifier d'abord dans EventKit via l'URL
+            if item.isEvent {
+                // Chercher l'événement par titre et date (au lieu d'utiliser l'ID qui peut changer)
+                let startDate = Calendar.current.startOfDay(for: item.date)
+                let endDate = Calendar.current.date(bySettingHour: 23, minute: 59, second: 59, of: item.date) ?? startDate
+                
+                let selectedCalendarIDs = calendarSelectionManager.selectedCalendarIDs
+                let calendars = eventStore.calendars(for: .event).filter {
+                    selectedCalendarIDs.contains($0.calendarIdentifier)
+                }
+                
+                let predicate = eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: calendars)
+                let events = eventStore.events(matching: predicate)
+                
+                // Trouver l'événement correspondant par titre et date
+                if let event = events.first(where: { $0.title == item.title && Calendar.current.isDate($0.startDate, equalTo: item.date, toGranularity: .minute) }) {
+                    // Vérifier si l'URL contient le marqueur de complétion
+                    if let url = event.url, url.absoluteString.hasPrefix("myday://completed/") {
+                        return true
+                    }
+                }
+            }
+            
+            // Fallback : vérifier dans le statusManager (pour rappels et compatibilité)
+            return statusManager.isCompleted(id: item.id.uuidString)
+        }
+        
+        /// Récupère le nom de l'utilisateur iCloud actuel
+        func getCurrentUserName() -> String {
+            // Essayer de récupérer le nom depuis NSUbiquitousKeyValueStore
+            if let accountName = NSUbiquitousKeyValueStore.default.string(forKey: "userDisplayName") {
+                return accountName
+            }
+            
+            // Sinon, essayer de récupérer depuis UserDefaults (cache local)
+            if let cachedName = UserDefaults.standard.string(forKey: "cachedUserName") {
+                return cachedName
+            }
+            
+            // En dernier recours, utiliser le nom du dispositif
+            let deviceName = UIDevice.current.name
+            // Retirer "iPhone de" ou "iPad de" pour garder juste le prénom
+            let cleanedName = deviceName
+                .replacingOccurrences(of: "iPhone de ", with: "")
+                .replacingOccurrences(of: "iPad de ", with: "")
+                .replacingOccurrences(of: "iPhone d'", with: "")
+                .replacingOccurrences(of: "iPad d'", with: "")
+                .replacingOccurrences(of: "'s iPhone", with: "")
+                .replacingOccurrences(of: "'s iPad", with: "")
+            
+            // Mettre en cache pour la prochaine fois
+            UserDefaults.standard.set(cleanedName, forKey: "cachedUserName")
+            
+            return cleanedName
         }
         
         func saveNextAgendaItemForWidget() {
@@ -1806,7 +1909,7 @@ struct ContentView: View {
                     // Combiner et trouver le prochain item non complété
                     let allItems = (events + reminderItems).sorted { $0.date < $1.date }
                     let upcomingItems = allItems.filter {
-                        $0.date >= now && !self.statusManager.isCompleted(id: $0.id.uuidString)
+                        $0.date >= now && !self.isItemCompleted($0)
                     }
                     
                     DispatchQueue.main.async {
