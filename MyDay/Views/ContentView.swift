@@ -1345,15 +1345,29 @@ struct ContentView: View {
                 let eventStore = SharedEventStore.shared
 
                 let selectedCalendarIDs = calendarSelectionManager.selectedCalendarIDs
-                let calendars = eventStore.calendars(for: .event).filter {
+                let allCalendars = eventStore.calendars(for: .event)
+                let calendars = allCalendars.filter {
                     selectedCalendarIDs.contains($0.calendarIdentifier)
+                }
+                
+                // 🔍 DEBUG: Log des calendriers
+                Logger.calendar.info("📅 Calendriers disponibles: \(allCalendars.count)")
+                Logger.calendar.info("📅 Calendriers sélectionnés: \(calendars.count)")
+                Logger.calendar.info("📅 IDs sélectionnés: \(selectedCalendarIDs.count)")
+                for calendar in allCalendars {
+                    let isSelected = selectedCalendarIDs.contains(calendar.calendarIdentifier)
+                    let isShared = EventKitHelpers.isCalendarShared(calendar)
+                    Logger.calendar.debug("  - \(calendar.title): selected=\(isSelected), shared=\(isShared)")
                 }
 
                 let startDate = Calendar.current.startOfDay(for: date)
                 let endDate = Calendar.current.date(bySettingHour: 23, minute: 59, second: 59, of: date) ?? startDate
                 let predicate = eventStore.predicateForEvents(withStart: startDate, end: endDate, calendars: calendars)
 
-                let events = eventStore.events(matching: predicate)
+                let rawEvents = eventStore.events(matching: predicate)
+                Logger.calendar.info("📅 Événements bruts trouvés: \(rawEvents.count) pour \(date)")
+                
+                let events = rawEvents
                     .filter { Calendar.current.isDate($0.startDate, inSameDayAs: date) } // ⏱ Garde uniquement les événements du jour sélectionné
                     .map {
                         AgendaItem(
@@ -1367,6 +1381,8 @@ struct ContentView: View {
                             calendarName: $0.calendar.title
                         )
                     }
+                
+                Logger.calendar.info("📅 Événements finaux (après filtre): \(events.count)")
 
                 fetchReminders(for: date, from: reminderSelectionManager) { reminders in
                     #if DEBUG
