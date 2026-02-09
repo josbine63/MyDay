@@ -257,6 +257,11 @@ class PermissionChecklistManager: ObservableObject {
                     // Vérifier immédiatement — le retry dans checkHealthDataAccess
                     // gérera la race condition si les permissions ne sont pas encore propagées
                     self.checkHealthDataAccess()
+                    
+                    // ✅ IMPORTANT: Activer automatiquement l'affichage Santé quand la permission est accordée
+                    // Cela évite le bug où l'utilisateur autorise dans l'onboarding mais ne voit rien
+                    UserSettings.shared.setShowHealth(true)
+                    self.logger.info("✅ Permission Santé accordée - Affichage automatiquement activé")
                 }
             }
         }
