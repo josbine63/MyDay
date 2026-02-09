@@ -1770,16 +1770,68 @@ struct ContentView: View {
             Logger.calendar.debug("🔑 Événement trouvé: \(event.title) - ID: \(event.eventIdentifier)")
             
             if markAsComplete {
-                // Créer URL de complétion avec timestamp ISO 8601
+                // Sauvegarder les alarmes existantes dans l'URL avant de les supprimer
+                let alarms = event.alarms ?? []
+                Logger.calendar.debug("🔔 Nombre d'alarmes à sauvegarder: \(alarms.count)")
+                
+                // Encoder les alarmes en JSON
+                var alarmsData: [[String: Any]] = []
+                for alarm in alarms {
+                    var alarmDict: [String: Any] = [:]
+                    if let absoluteDate = alarm.absoluteDate {
+                        alarmDict["absoluteDate"] = absoluteDate.timeIntervalSince1970
+                    }
+                    if let relativeOffset = alarm.relativeOffset as? TimeInterval, relativeOffset != 0 {
+                        alarmDict["relativeOffset"] = relativeOffset
+                    }
+                    alarmsData.append(alarmDict)
+                }
+                
+                // Créer URL de complétion avec timestamp ISO 8601 et alarmes encodées
                 let now = Date()
                 let isoFormatter = ISO8601DateFormatter()
                 isoFormatter.formatOptions = [.withInternetDateTime]
                 let timestamp = isoFormatter.string(from: now)
                 
-                let completionURL = URL(string: "myday://completed/\(timestamp)")
+                // Encoder les alarmes en base64 pour les mettre dans l'URL
+                var urlString = "myday://completed/\(timestamp)"
+                if let jsonData = try? JSONSerialization.data(withJSONObject: alarmsData),
+                   let base64 = jsonData.base64EncodedString().addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+                    urlString += "?alarms=\(base64)"
+                }
+                
+                let completionURL = URL(string: urlString)
                 event.url = completionURL
-                Logger.calendar.info("✅ Ajout URL de complétion: \(completionURL?.absoluteString ?? "nil")")
+                Logger.calendar.info("✅ Ajout URL de complétion avec \(alarms.count) alarme(s) sauvegardée(s)")
+                
+                // Supprimer toutes les alarmes pour rendre l'événement silencieux
+                event.alarms?.forEach { event.removeAlarm($0) }
+                Logger.calendar.info("🔕 Toutes les alarmes ont été supprimées - événement rendu silencieux")
+                
             } else {
+                // Restaurer les alarmes depuis l'URL si elles existent
+                if let url = event.url,
+                   let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+                   let alarmsParam = components.queryItems?.first(where: { $0.name == "alarms" })?.value,
+                   let decodedString = alarmsParam.removingPercentEncoding,
+                   let jsonData = Data(base64Encoded: decodedString),
+                   let alarmsData = try? JSONSerialization.jsonObject(with: jsonData) as? [[String: Any]] {
+                    
+                    Logger.calendar.debug("🔔 Restauration de \(alarmsData.count) alarme(s)")
+                    
+                    for alarmDict in alarmsData {
+                        if let absoluteDateInterval = alarmDict["absoluteDate"] as? TimeInterval {
+                            let absoluteDate = Date(timeIntervalSince1970: absoluteDateInterval)
+                            let alarm = EKAlarm(absoluteDate: absoluteDate)
+                            event.addAlarm(alarm)
+                        } else if let relativeOffset = alarmDict["relativeOffset"] as? TimeInterval {
+                            let alarm = EKAlarm(relativeOffset: relativeOffset)
+                            event.addAlarm(alarm)
+                        }
+                    }
+                    Logger.calendar.info("🔔 \(alarmsData.count) alarme(s) restaurée(s)")
+                }
+                
                 // Retirer l'URL de complétion
                 event.url = nil
                 Logger.calendar.info("🔄 Retrait URL de complétion de l'événement: \(event.title)")

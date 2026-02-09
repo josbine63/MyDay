@@ -167,6 +167,12 @@
     "Action" : {
 
     },
+    "Actions rapides" : {
+
+    },
+    "Active les logs détaillés pour la galerie photos et EventKit (calendriers, rappels)." : {
+
+    },
     "Activer" : {
 
     },
@@ -183,6 +189,9 @@
 
     },
     "Afficher les photos" : {
+
+    },
+    "Ajouter lien de test" : {
 
     },
     "Ajouter un lien" : {
@@ -390,7 +399,6 @@
       }
     },
     "Debug" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -399,6 +407,12 @@
           }
         }
       }
+    },
+    "Debug Liens" : {
+
+    },
+    "Debug Liens Personnalisés" : {
+
     },
     "Désactiver" : {
 
@@ -582,6 +596,15 @@
         }
       }
     },
+    "Logs verbeux Calendriers/Rappels" : {
+
+    },
+    "Logs verbeux Photos" : {
+
+    },
+    "MATCH ✓" : {
+
+    },
     "Médicament" : {
       "localizations" : {
         "en" : {
@@ -627,6 +650,9 @@
           }
         }
       }
+    },
+    "Nettoyer les liens de test" : {
+
     },
     "newCalTitle" : {
       "extractionState" : "manual",
@@ -705,6 +731,9 @@
       }
     },
     "Nom du raccourci" : {
+
+    },
+    "Nombre de liens" : {
 
     },
     "Notes (optionnel)" : {
@@ -1006,6 +1035,9 @@
     "Précédent" : {
 
     },
+    "Premier lien" : {
+
+    },
     "Pris à" : {
       "localizations" : {
         "en" : {
@@ -1052,6 +1084,9 @@
           }
         }
       }
+    },
+    "Réinitialiser tout" : {
+
     },
     "Santé" : {
 
@@ -1101,6 +1136,9 @@
           }
         }
       }
+    },
+    "shortcuts://run-shortcut?name=%@" : {
+
     },
     "Signe actuel" : {
 
@@ -1156,6 +1194,18 @@
         }
       }
     },
+    "Test de matching" : {
+
+    },
+    "Test de raccourci" : {
+
+    },
+    "Tester l'ouverture" : {
+
+    },
+    "Tester le matching" : {
+
+    },
     "Tester le raccourci" : {
 
     },
@@ -1174,6 +1224,9 @@
           }
         }
       }
+    },
+    "Titre à tester" : {
+
     },
     "Titre exact" : {
 
@@ -1224,6 +1277,9 @@
           }
         }
       }
+    },
+    "URLs générées" : {
+
     },
     "Vérifiez que le raccourci fonctionne correctement." : {
 
