@@ -8,6 +8,7 @@
 import SwiftUI
 import Photos
 import HealthKit
+import Translation
 import os.log
 
 struct SettingsView: View {
@@ -225,6 +226,89 @@ struct SettingsView: View {
                     Text("L'horoscope quotidien s'affiche en bas de votre vue principale.")
                 } else {
                     Text("Activez ces options pour personnaliser votre expérience quotidienne.")
+                }
+            }
+            
+            // MARK: - Section Traduction
+            if quoteService.isQuoteEnabled || horoscopeService.isHoroscopeEnabled {
+                Section {
+                    // Statut de la traduction
+                    HStack {
+                        Image(systemName: "globe")
+                            .foregroundColor(.blue)
+                            .frame(width: 30)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Traduction automatique")
+                                .font(.subheadline)
+                            if #available(iOS 18.0, *) {
+                                if horoscopeService.isTranslationAvailable || quoteService.isTranslationAvailable {
+                                    Label("Disponible et prête", systemImage: "checkmark.circle.fill")
+                                        .font(.caption)
+                                        .foregroundColor(.green)
+                                } else {
+                                    Label("Langues non téléchargées", systemImage: "exclamationmark.triangle.fill")
+                                        .font(.caption)
+                                        .foregroundColor(.orange)
+                                }
+                            } else {
+                                Label("Nécessite iOS 18+", systemImage: "xmark.circle.fill")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                        }
+                        Spacer()
+                    }
+                    
+                    if #available(iOS 18.0, *) {
+                        // Bouton pour ouvrir l'app Traduire
+                        if !horoscopeService.isTranslationAvailable && !quoteService.isTranslationAvailable {
+                            Button(action: {
+                                // Ouvrir l'app Traduire d'Apple (App Store ID: 1514844618)
+                                if let url = URL(string: "itms-apps://apps.apple.com/app/id1514844618") {
+                                    UIApplication.shared.open(url)
+                                }
+                            }) {
+                                HStack {
+                                    Image(systemName: "character.bubble")
+                                        .foregroundColor(.blue)
+                                        .frame(width: 30)
+                                    VStack(alignment: .leading) {
+                                        Text("Ouvrir l'app Traduire")
+                                        Text("Téléchargez Anglais → Français")
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // Bouton pour rafraîchir le statut
+                        Button(action: {
+                            Task {
+                                await horoscopeService.checkTranslationAvailability()
+                                await quoteService.checkTranslationAvailability()
+                            }
+                        }) {
+                            HStack {
+                                Image(systemName: "arrow.clockwise")
+                                    .foregroundColor(.blue)
+                                    .frame(width: 30)
+                                Text("Vérifier la disponibilité")
+                            }
+                        }
+                    }
+                } header: {
+                    Text("Traduction")
+                } footer: {
+                    if #available(iOS 18.0, *) {
+                        if horoscopeService.isTranslationAvailable || quoteService.isTranslationAvailable {
+                            Text("La pensée du jour et l'horoscope seront traduits automatiquement en français.")
+                        } else {
+                            Text("Pour activer la traduction automatique:\n1. Appuyez sur «Ouvrir l'app Traduire»\n2. Dans Traduire, appuyez sur 🌐 en bas\n3. Téléchargez «Anglais» et «Français»\n4. Revenez ici et appuyez sur «Vérifier»")
+                        }
+                    } else {
+                        Text("La traduction automatique nécessite iOS 18 ou plus récent.")
+                    }
                 }
             }
             
