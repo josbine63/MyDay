@@ -169,15 +169,65 @@ class HoroscopeService: ObservableObject {
     @Published var translatedHoroscope: HoroscopeResponse?
     @Published var translationTrigger: UUID = UUID() // Pour forcer le refresh
     @Published var isTranslating: Bool = false // Pour indiquer qu'une traduction est en cours
+    @Published var isTranslationAvailable: Bool = false // Disponibilité de la traduction
     
     private let selectedSignKey = "selectedZodiacSign"
     private let selectedProviderKey = "selectedHoroscopeProvider"
     private let horoscopeEnabledKey = "horoscopeEnabled"
     
+    // MARK: - Cache Keys for Translation
+    private func translatedCacheKey(for sign: ZodiacSign, language: String) -> String {
+        return "cachedHoroscope_\(sign.rawValue)_translated_\(language)"
+    }
+    
     private init() {
         // Nettoyer les anciennes clés de cache (migration)
         UserDefaults.standard.removeObject(forKey: "cachedHoroscope")
         UserDefaults.standard.removeObject(forKey: "cachedHoroscopeDate")
+        
+        // Vérifier la disponibilité de la traduction au démarrage
+        Task {
+            await checkTranslationAvailability()
+        }
+    }
+    
+    // MARK: - Translation Availability Check
+    
+    /// Vérifie si la traduction est disponible sur l'appareil
+    @MainActor
+    func checkTranslationAvailability() async {
+        guard #available(iOS 18.0, macOS 15.0, *) else {
+            isTranslationAvailable = false
+            Logger.horoscope.info("🌐 Traduction non disponible (iOS < 18)")
+            return
+        }
+        
+        let userLanguage = Locale.preferredLanguages.first?.prefix(2).lowercased() ?? "en"
+        guard userLanguage != "en" else {
+            isTranslationAvailable = false // Pas besoin de traduction pour l'anglais
+            return
+        }
+        
+        let availability = LanguageAvailability()
+        let sourceLang = Locale.Language(identifier: "en")
+        let targetLang = Locale.Language(identifier: String(userLanguage))
+        
+        let status = await availability.status(from: sourceLang, to: targetLang)
+        
+        switch status {
+        case .installed:
+            isTranslationAvailable = true
+            Logger.horoscope.info("✅ Traduction installée et prête (en → \(userLanguage))")
+        case .supported:
+            isTranslationAvailable = true
+            Logger.horoscope.info("⚠️ Traduction supportée mais nécessite téléchargement (en → \(userLanguage))")
+        case .unsupported:
+            isTranslationAvailable = false
+            Logger.horoscope.warning("❌ Traduction non supportée pour en → \(userLanguage)")
+        @unknown default:
+            isTranslationAvailable = false
+            Logger.horoscope.warning("❌ Statut de traduction inconnu")
+        }
     }
     
     var isHoroscopeEnabled: Bool {
@@ -241,8 +291,25 @@ class HoroscopeService: ObservableObject {
     
     @MainActor
     func fetchHoroscope(for sign: ZodiacSign, forceRefresh: Bool = false) async {
+        let userLanguage = Locale.preferredLanguages.first?.prefix(2).lowercased() ?? "en"
+        
         // Vérifier le cache si on ne force pas le refresh
         if !forceRefresh {
+            // D'abord essayer le cache traduit si l'utilisateur n'est pas anglophone
+            if userLanguage != "en" {
+                if let translatedCache = loadTranslatedCachedHoroscope(language: userLanguage) {
+                    let dateKey = cacheDateKey(for: selectedSign)
+                    if let cacheDate = UserDefaults.standard.object(forKey: dateKey) as? Date,
+                       Calendar.current.isDateInToday(cacheDate) {
+                        Logger.horoscope.debug("📦 Utilisation de l'horoscope TRADUIT en cache (aujourd'hui)")
+                        self.currentHoroscope = translatedCache
+                        // Pas besoin de préparer la traduction, c'est déjà traduit!
+                        return
+                    }
+                }
+            }
+            
+            // Sinon essayer le cache anglais
             if let cachedHoroscope = loadCachedHoroscope() {
                 // Vérifier si le cache est d'aujourd'hui
                 let dateKey = cacheDateKey(for: selectedSign)
@@ -251,9 +318,8 @@ class HoroscopeService: ObservableObject {
                     Logger.horoscope.debug("📦 Utilisation de l'horoscope en cache (aujourd'hui)")
                     self.currentHoroscope = cachedHoroscope
                     
-                    // ✅ Préparer la traduction pour le cache aussi
-                    let userLanguage = Locale.preferredLanguages.first?.prefix(2).lowercased() ?? "en"
-                    if userLanguage != "en" {
+                    // ✅ Préparer la traduction pour le cache seulement si disponible
+                    if userLanguage != "en" && isTranslationAvailable {
                         prepareTranslation(for: cachedHoroscope, to: String(userLanguage))
                     }
                     
@@ -519,12 +585,46 @@ class HoroscopeService: ObservableObject {
     }
     
     private func clearCache() {
-        // Nettoyer le cache pour le signe actuel
+        // Nettoyer le cache pour le signe actuel (anglais ET traduit)
         let key = cacheKey(for: selectedSign)
         let dateKey = cacheDateKey(for: selectedSign)
         UserDefaults.standard.removeObject(forKey: key)
         UserDefaults.standard.removeObject(forKey: dateKey)
+        
+        // Nettoyer aussi le cache traduit pour toutes les langues courantes
+        for lang in ["fr", "es", "de", "it", "pt"] {
+            let translatedKey = translatedCacheKey(for: selectedSign, language: lang)
+            UserDefaults.standard.removeObject(forKey: translatedKey)
+        }
+        
         Logger.horoscope.debug("🧹 Cache nettoyé pour \(self.selectedSign.rawValue)")
+    }
+    
+    // MARK: - Translated Cache Management
+    
+    /// Sauvegarde l'horoscope traduit dans le cache
+    private func saveTranslatedToCache(_ horoscope: HoroscopeResponse, language: String) {
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(horoscope) {
+            let key = translatedCacheKey(for: selectedSign, language: language)
+            UserDefaults.standard.set(encoded, forKey: key)
+            Logger.horoscope.debug("💾 Horoscope TRADUIT mis en cache pour \(self.selectedSign.rawValue) (\(language))")
+        }
+    }
+    
+    /// Charge l'horoscope traduit depuis le cache
+    private func loadTranslatedCachedHoroscope(language: String) -> HoroscopeResponse? {
+        let key = translatedCacheKey(for: selectedSign, language: language)
+        
+        if let data = UserDefaults.standard.data(forKey: key) {
+            let decoder = JSONDecoder()
+            if let horoscope = try? decoder.decode(HoroscopeResponse.self, from: data) {
+                Logger.horoscope.debug("📦 Horoscope TRADUIT chargé depuis le cache (\(language))")
+                return horoscope
+            }
+        }
+        
+        return nil
     }
     
     // MARK: - Translation Handler
@@ -536,6 +636,12 @@ class HoroscopeService: ObservableObject {
             // Pas besoin de traduire si l'utilisateur veut l'anglais
             translationConfiguration = nil
             textToTranslate = nil
+            return
+        }
+        
+        // ✅ Vérifier si la traduction est disponible
+        guard isTranslationAvailable else {
+            Logger.horoscope.info("🌐 Traduction non disponible, affichage en anglais")
             return
         }
         
@@ -599,8 +705,12 @@ class HoroscopeService: ObservableObject {
             await MainActor.run {
                 self.currentHoroscope = translatedHoroscope
                 self.textToTranslate = nil // Réinitialiser
+                
+                // ✅ IMPORTANT: Sauvegarder la traduction dans le cache
+                let userLanguage = Locale.preferredLanguages.first?.prefix(2).lowercased() ?? "en"
+                self.saveTranslatedToCache(translatedHoroscope, language: String(userLanguage))
             }
-            Logger.horoscope.debug("✅ Horoscope traduit avec succès")
+            Logger.horoscope.debug("✅ Horoscope traduit et mis en cache avec succès")
             
         } catch {
             Logger.horoscope.error("❌ Erreur lors de la traduction de l'horoscope: \(error.localizedDescription)")

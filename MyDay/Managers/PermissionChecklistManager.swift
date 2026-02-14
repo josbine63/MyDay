@@ -260,7 +260,7 @@ class PermissionChecklistManager: ObservableObject {
                     
                     // ✅ IMPORTANT: Activer automatiquement l'affichage Santé quand la permission est accordée
                     // Cela évite le bug où l'utilisateur autorise dans l'onboarding mais ne voit rien
-                    UserSettings.shared.setShowHealth(true)
+                    self.activateHealthDisplay()
                     self.logger.info("✅ Permission Santé accordée - Affichage automatiquement activé")
                 }
             }
@@ -273,5 +273,33 @@ class PermissionChecklistManager: ObservableObject {
         let value = [calendarStatus, reminderStatus].allSatisfy { $0 == .granted }
         allGrantedState = value
         UserDefaultsManager.set(value, forKey: UserDefaultsKeys.PermissionsAllGranted)
+    }
+    
+    /// Active l'affichage de la section Santé en modifiant directement les préférences
+    private func activateHealthDisplay() {
+        let defaults = UserDefaults.appGroup
+        let preferencesKey = "userPreferences"
+        
+        // Charger les préférences existantes
+        if let data = defaults.data(forKey: preferencesKey),
+           var preferences = try? JSONDecoder().decode(UserPreferences.self, from: data) {
+            // Modifier showHealth
+            preferences.showHealth = true
+            
+            // Sauvegarder
+            if let encoded = try? JSONEncoder().encode(preferences) {
+                defaults.set(encoded, forKey: preferencesKey)
+                logger.debug("💾 Préférence showHealth activée dans UserDefaults")
+            }
+        } else {
+            // Si pas de préférences existantes, créer avec showHealth activé
+            var newPreferences = UserPreferences.default
+            newPreferences.showHealth = true
+            
+            if let encoded = try? JSONEncoder().encode(newPreferences) {
+                defaults.set(encoded, forKey: preferencesKey)
+                logger.debug("💾 Nouvelles préférences créées avec showHealth activé")
+            }
+        }
     }
 }

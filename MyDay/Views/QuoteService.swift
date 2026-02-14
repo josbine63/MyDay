@@ -36,14 +36,30 @@ class QuoteService: ObservableObject {
     @Published var textToTranslate: String?
     @Published var quoteAuthor: String?
     @Published var translationTrigger: UUID = UUID()
+    @Published var isTranslationAvailable: Bool = false // Disponibilité de la traduction
     
     private let quoteEnabledKey = "quoteOfTheDayEnabled"
     private let cachedQuoteKey = "cachedQuote"
     private let cachedQuoteDateKey = "cachedQuoteDate"
+    private let cachedQuoteTranslatedKey = "cachedQuoteTranslated" // ✅ Cache pour traduction
+    private let cachedQuoteLanguageKey = "cachedQuoteLanguage" // ✅ Langue du cache traduit
     
     private init() {
-        // Charger le cache directement sans @MainActor (init est toujours sur le main thread pour ObservableObject)
-        if let cacheDate = UserDefaults.standard.object(forKey: cachedQuoteDateKey) as? Date,
+        let userLanguage = Locale.preferredLanguages.first?.prefix(2).lowercased() ?? "en"
+        
+        // D'abord essayer le cache traduit si non anglophone
+        if userLanguage != "en",
+           let cacheDate = UserDefaults.standard.object(forKey: cachedQuoteDateKey) as? Date,
+           Calendar.current.isDateInToday(cacheDate),
+           let cachedLanguage = UserDefaults.standard.string(forKey: cachedQuoteLanguageKey),
+           cachedLanguage == userLanguage,
+           let translatedQuote = UserDefaults.standard.string(forKey: cachedQuoteTranslatedKey),
+           !translatedQuote.isEmpty {
+            Logger.quote.debug("✅ Cache TRADUIT valide pour aujourd'hui (\(cachedLanguage))")
+            self.currentQuote = translatedQuote
+        }
+        // Sinon essayer le cache normal
+        else if let cacheDate = UserDefaults.standard.object(forKey: cachedQuoteDateKey) as? Date,
            Calendar.current.isDateInToday(cacheDate),
            let cachedQuote = UserDefaults.standard.string(forKey: cachedQuoteKey),
            !cachedQuote.isEmpty {
@@ -52,6 +68,50 @@ class QuoteService: ObservableObject {
         } else {
             let lang = Locale.preferredLanguages.first ?? "en"
             self.currentQuote = lang.hasPrefix("fr") ? "Chargement…" : "Loading…"
+        }
+        
+        // Vérifier la disponibilité de la traduction au démarrage
+        Task {
+            await checkTranslationAvailability()
+        }
+    }
+    
+    // MARK: - Translation Availability Check
+    
+    /// Vérifie si la traduction est disponible sur l'appareil
+    @MainActor
+    func checkTranslationAvailability() async {
+        guard #available(iOS 18.0, macOS 15.0, *) else {
+            isTranslationAvailable = false
+            Logger.quote.info("🌐 Traduction non disponible (iOS < 18)")
+            return
+        }
+        
+        let userLanguage = Locale.preferredLanguages.first?.prefix(2).lowercased() ?? "en"
+        guard userLanguage != "en" else {
+            isTranslationAvailable = false // Pas besoin de traduction pour l'anglais
+            return
+        }
+        
+        let availability = LanguageAvailability()
+        let sourceLang = Locale.Language(identifier: "en")
+        let targetLang = Locale.Language(identifier: String(userLanguage))
+        
+        let status = await availability.status(from: sourceLang, to: targetLang)
+        
+        switch status {
+        case .installed:
+            isTranslationAvailable = true
+            Logger.quote.info("✅ Traduction installée et prête (en → \(userLanguage))")
+        case .supported:
+            isTranslationAvailable = true
+            Logger.quote.info("⚠️ Traduction supportée mais nécessite téléchargement (en → \(userLanguage))")
+        case .unsupported:
+            isTranslationAvailable = false
+            Logger.quote.warning("❌ Traduction non supportée pour en → \(userLanguage)")
+        @unknown default:
+            isTranslationAvailable = false
+            Logger.quote.warning("❌ Statut de traduction inconnu")
         }
     }
     
@@ -79,14 +139,40 @@ class QuoteService: ObservableObject {
             return
         }
         
+        let userLanguage = Locale.preferredLanguages.first?.prefix(2).lowercased() ?? "en"
+        
         // Vérifier le cache si on ne force pas le refresh
         if !forceRefresh {
+            // D'abord essayer le cache traduit si non anglophone
+            if userLanguage != "en",
+               let cacheDate = UserDefaults.standard.object(forKey: cachedQuoteDateKey) as? Date,
+               Calendar.current.isDateInToday(cacheDate),
+               let cachedLanguage = UserDefaults.standard.string(forKey: cachedQuoteLanguageKey),
+               cachedLanguage == userLanguage,
+               let translatedQuote = UserDefaults.standard.string(forKey: cachedQuoteTranslatedKey),
+               !translatedQuote.isEmpty {
+                Logger.quote.debug("📦 Utilisation de la citation TRADUITE en cache (aujourd'hui)")
+                self.currentQuote = translatedQuote
+                return
+            }
+            
+            // Sinon essayer le cache normal
             if let cacheDate = UserDefaults.standard.object(forKey: cachedQuoteDateKey) as? Date,
                Calendar.current.isDateInToday(cacheDate),
                let cachedQuote = UserDefaults.standard.string(forKey: cachedQuoteKey),
                !cachedQuote.isEmpty {
                 Logger.quote.debug("📦 Utilisation de la citation en cache (aujourd'hui)")
                 self.currentQuote = cachedQuote
+                
+                // ✅ Préparer la traduction seulement si disponible et nécessaire
+                if userLanguage != "en" && isTranslationAvailable {
+                    // Extraire le texte original pour traduction
+                    // Le format est "\"quote\" — author"
+                    if let quoteText = extractQuoteText(from: cachedQuote),
+                       let author = extractAuthor(from: cachedQuote) {
+                        prepareTranslation(quoteText: quoteText, author: author, to: String(userLanguage))
+                    }
+                }
                 return
             }
         }
@@ -102,8 +188,7 @@ class QuoteService: ObservableObject {
             return
         }
         
-        // Obtenir la langue de l'utilisateur
-        let userLanguage = Locale.preferredLanguages.first?.prefix(2).lowercased() ?? "en"
+        // userLanguage déjà défini plus haut dans la fonction
         
         do {
             var request = URLRequest(url: url)
@@ -129,36 +214,18 @@ class QuoteService: ObservableObject {
                 // Citation originale en anglais
                 let originalQuote = "\"\(firstQuote.q)\" — \(firstQuote.a)"
                 
-                // Préparer la traduction si nécessaire
-                if userLanguage != "en" {
-                    if #available(iOS 18.0, macOS 15.0, *) {
-                        Logger.quote.debug("🌐 Préparation traduction vers \(userLanguage)")
-                        
-                        // Stocker le texte à traduire
-                        textToTranslate = firstQuote.q
-                        quoteAuthor = firstQuote.a
-                        
-                        // Créer la configuration de traduction
-                        let sourceLang = Locale.Language(identifier: "en")
-                        let targetLang = Locale.Language(identifier: String(userLanguage))
-                        translationConfiguration = TranslationSession.Configuration(
-                            source: sourceLang,
-                            target: targetLang
-                        )
-                        
-                        translationTrigger = UUID()
-                        // isLoading reste true — handleTranslation mettra à jour
-                        // currentQuote et le cache après traduction
-                    } else {
-                        // iOS < 18 : traduction indisponible, afficher en anglais
-                        Logger.quote.info("ℹ️ Traduction nécessite iOS 18+, affichage en anglais")
-                        currentQuote = originalQuote
-                        saveToCache(originalQuote)
-                    }
-                } else {
-                    // L'utilisateur préfère l'anglais
+                // Toujours sauvegarder l'original en cache
+                saveToCache(originalQuote)
+                
+                // Préparer la traduction si nécessaire et disponible
+                if userLanguage != "en" && isTranslationAvailable {
+                    prepareTranslation(quoteText: firstQuote.q, author: firstQuote.a, to: String(userLanguage))
+                    // currentQuote temporaire pendant la traduction
                     currentQuote = originalQuote
-                    saveToCache(originalQuote)
+                } else {
+                    // L'utilisateur préfère l'anglais ou traduction non disponible
+                    currentQuote = originalQuote
+                    isLoading = false
                 }
                 
                 Logger.quote.info("✅ Pensée du jour récupérée avec succès")
@@ -190,6 +257,39 @@ class QuoteService: ObservableObject {
         }
     }
     
+    // MARK: - Translation Preparation
+    
+    /// Prépare la traduction de la citation
+    @MainActor
+    private func prepareTranslation(quoteText: String, author: String, to targetLanguage: String) {
+        guard isTranslationAvailable else {
+            Logger.quote.info("🌐 Traduction non disponible, affichage en anglais")
+            isLoading = false
+            return
+        }
+        
+        if #available(iOS 18.0, macOS 15.0, *) {
+            Logger.quote.debug("🌐 Préparation traduction vers \(targetLanguage)")
+            
+            // Stocker le texte à traduire
+            textToTranslate = quoteText
+            quoteAuthor = author
+            
+            // Créer la configuration de traduction
+            let sourceLang = Locale.Language(identifier: "en")
+            let targetLang = Locale.Language(identifier: targetLanguage)
+            translationConfiguration = TranslationSession.Configuration(
+                source: sourceLang,
+                target: targetLang
+            )
+            
+            translationTrigger = UUID()
+            // isLoading reste true — handleTranslation mettra à jour
+        } else {
+            isLoading = false
+        }
+    }
+    
     // MARK: - Translation Handler
     
     @available(iOS 18.0, macOS 15.0, *)
@@ -212,12 +312,15 @@ class QuoteService: ObservableObject {
             await MainActor.run {
                 let translatedQuote = "\"\(translatedText)\" — \(author)"
                 self.currentQuote = translatedQuote
-                self.saveToCache(translatedQuote)
+                
+                // ✅ IMPORTANT: Sauvegarder la traduction dans le cache séparé
+                let userLanguage = Locale.preferredLanguages.first?.prefix(2).lowercased() ?? "en"
+                self.saveTranslatedToCache(translatedQuote, language: String(userLanguage))
                 
                 self.textToTranslate = nil
                 self.quoteAuthor = nil
                 self.isLoading = false
-                Logger.quote.debug("✅ Citation traduite avec succès")
+                Logger.quote.debug("✅ Citation traduite et mise en cache avec succès")
             }
             
         } catch {
@@ -227,7 +330,6 @@ class QuoteService: ObservableObject {
                 if let text = self.textToTranslate, let author = self.quoteAuthor {
                     let fallback = "\"\(text)\" — \(author)"
                     self.currentQuote = fallback
-                    self.saveToCache(fallback)
                 }
                 self.textToTranslate = nil
                 self.quoteAuthor = nil
@@ -245,7 +347,35 @@ class QuoteService: ObservableObject {
         Logger.quote.debug("💾 Citation mise en cache")
     }
     
+    /// Sauvegarde la citation traduite dans un cache séparé
+    @MainActor
+    private func saveTranslatedToCache(_ quote: String, language: String) {
+        UserDefaults.standard.set(quote, forKey: cachedQuoteTranslatedKey)
+        UserDefaults.standard.set(language, forKey: cachedQuoteLanguageKey)
+        Logger.quote.debug("💾 Citation TRADUITE mise en cache (\(language))")
+    }
+    
     // MARK: - Helper Methods
+    
+    /// Extrait le texte de la citation du format "\"quote\" — author"
+    private func extractQuoteText(from formattedQuote: String) -> String? {
+        // Format: "\"quote\" — author"
+        if let startIndex = formattedQuote.firstIndex(of: "\""),
+           let endIndex = formattedQuote.lastIndex(of: "\""),
+           startIndex != endIndex {
+            let start = formattedQuote.index(after: startIndex)
+            return String(formattedQuote[start..<endIndex])
+        }
+        return nil
+    }
+    
+    /// Extrait l'auteur du format "\"quote\" — author"
+    private func extractAuthor(from formattedQuote: String) -> String? {
+        if let dashRange = formattedQuote.range(of: " — ") {
+            return String(formattedQuote[dashRange.upperBound...]).trimmingCharacters(in: .whitespaces)
+        }
+        return nil
+    }
     
     private func localizedError(_ french: String, _ english: String) -> String {
         let lang = Locale.preferredLanguages.first ?? "en"
