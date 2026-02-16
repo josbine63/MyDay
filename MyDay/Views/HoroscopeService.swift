@@ -762,6 +762,24 @@ class HoroscopeService: ObservableObject {
             return
         }
         
+        // ✅ Vérifier si on a déjà une traduction en cache pour ce texte
+        if let translatedCache = loadTranslatedCachedHoroscope(language: targetLanguage) {
+            let dateKey = cacheDateKey(for: selectedSign)
+            if let cacheDate = UserDefaults.standard.object(forKey: dateKey) as? Date,
+               Calendar.current.isDateInToday(cacheDate) {
+                // On a déjà une traduction valide, pas besoin de retraduire
+                Logger.horoscope.debug("🌐 Traduction déjà en cache, skip prepareTranslation")
+                self.currentHoroscope = translatedCache
+                return
+            }
+        }
+        
+        // ✅ Vérifier si une traduction est déjà en cours pour ce texte
+        if textToTranslate == horoscope.description {
+            Logger.horoscope.debug("🌐 Traduction déjà en cours pour ce texte, skip")
+            return
+        }
+        
         if #available(iOS 18.0, macOS 15.0, *) {
             Logger.horoscope.debug("🌐 Préparation traduction horoscope vers \(targetLanguage)")
             

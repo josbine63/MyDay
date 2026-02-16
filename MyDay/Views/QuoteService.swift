@@ -268,6 +268,26 @@ class QuoteService: ObservableObject {
             return
         }
         
+        // ✅ Vérifier si on a déjà une traduction en cache
+        if let cacheDate = UserDefaults.standard.object(forKey: cachedQuoteDateKey) as? Date,
+           Calendar.current.isDateInToday(cacheDate),
+           let cachedLanguage = UserDefaults.standard.string(forKey: cachedQuoteLanguageKey),
+           cachedLanguage == targetLanguage,
+           let translatedQuote = UserDefaults.standard.string(forKey: cachedQuoteTranslatedKey),
+           !translatedQuote.isEmpty {
+            // On a déjà une traduction valide, pas besoin de retraduire
+            Logger.quote.debug("🌐 Traduction déjà en cache, skip prepareTranslation")
+            self.currentQuote = translatedQuote
+            isLoading = false
+            return
+        }
+        
+        // ✅ Vérifier si une traduction est déjà en cours pour ce texte
+        if textToTranslate == quoteText {
+            Logger.quote.debug("🌐 Traduction déjà en cours pour ce texte, skip")
+            return
+        }
+        
         if #available(iOS 18.0, macOS 15.0, *) {
             Logger.quote.debug("🌐 Préparation traduction vers \(targetLanguage)")
             
