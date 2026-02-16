@@ -16,8 +16,9 @@ extension Logger {
 // MARK: - API Provider Selection
 
 enum HoroscopeProvider: String, CaseIterable, Identifiable {
-    case aztro = "aztro"
+    case ohmanda = "ohmanda"
     case horoscopeAPI = "horoscope-api"
+    case aztro = "aztro"
     
     var id: String { rawValue }
     
@@ -26,17 +27,20 @@ enum HoroscopeProvider: String, CaseIterable, Identifiable {
         let isFrench = lang.hasPrefix("fr")
         
         switch self {
-        case .aztro:
-            return isFrench ? "Aztro (Alternatif)" : "Aztro (Alternative)"
+        case .ohmanda:
+            return isFrench ? "Ohmanda (Recommandé)" : "Ohmanda (Recommended)"
         case .horoscopeAPI:
-            return isFrench ? "Horoscope API (Par défaut)" : "Horoscope API (Default)"
+            return isFrench ? "Horoscope API" : "Horoscope API"
+        case .aztro:
+            return isFrench ? "Aztro" : "Aztro"
         }
     }
     
     var sourceURL: String {
         switch self {
-        case .aztro: return "aztro.sameerkumar.website"
+        case .ohmanda: return "ohmanda.com"
         case .horoscopeAPI: return "horoscope-app-api.vercel.app"
+        case .aztro: return "aztro.sameerkumar.website"
         }
     }
     
@@ -45,10 +49,12 @@ enum HoroscopeProvider: String, CaseIterable, Identifiable {
         let isFrench = lang.hasPrefix("fr")
         
         switch self {
-        case .aztro:
-            return isFrench ? "Service principal avec détails complets" : "Main service with full details"
+        case .ohmanda:
+            return isFrench ? "Source: Astrology.com - Fiable et rapide" : "Source: Astrology.com - Reliable and fast"
         case .horoscopeAPI:
-            return isFrench ? "Service alternatif plus simple" : "Alternative simpler service"
+            return isFrench ? "API Vercel - Service alternatif" : "Vercel API - Alternative service"
+        case .aztro:
+            return isFrench ? "Service classique avec détails" : "Classic service with details"
         }
     }
 }
@@ -153,6 +159,23 @@ enum ZodiacSign: String, CaseIterable, Identifiable {
         case .pisces: return "🐟"
         }
     }
+    
+    var dateRange: String {
+        switch self {
+        case .aries: return "Mar 21 - Apr 19"
+        case .taurus: return "Apr 20 - May 20"
+        case .gemini: return "May 21 - Jun 20"
+        case .cancer: return "Jun 21 - Jul 22"
+        case .leo: return "Jul 23 - Aug 22"
+        case .virgo: return "Aug 23 - Sep 22"
+        case .libra: return "Sep 23 - Oct 22"
+        case .scorpio: return "Oct 23 - Nov 21"
+        case .sagittarius: return "Nov 22 - Dec 21"
+        case .capricorn: return "Dec 22 - Jan 19"
+        case .aquarius: return "Jan 20 - Feb 18"
+        case .pisces: return "Feb 19 - Mar 20"
+        }
+    }
 }
 
 class HoroscopeService: ObservableObject {
@@ -250,7 +273,7 @@ class HoroscopeService: ObservableObject {
                let provider = HoroscopeProvider(rawValue: providerRawValue) {
                 return provider
             }
-            return .horoscopeAPI // Valeur par défaut
+            return .ohmanda // Valeur par défaut - le plus fiable
         }
         set {
             UserDefaults.standard.set(newValue.rawValue, forKey: selectedProviderKey)
@@ -336,11 +359,105 @@ class HoroscopeService: ObservableObject {
         
         // Choisir la bonne API
         switch self.selectedProvider {
-        case .aztro:
-            await fetchFromAztro(sign: sign)
+        case .ohmanda:
+            await fetchFromOhmanda(sign: sign)
         case .horoscopeAPI:
             await fetchFromHoroscopeAPI(sign: sign)
+        case .aztro:
+            await fetchFromAztro(sign: sign)
         }
+    }
+    
+    // MARK: - Ohmanda API (Recommandé)
+    
+    @MainActor
+    private func fetchFromOhmanda(sign: ZodiacSign) async {
+        var lastStatusCode: Int?
+        
+        for attempt in 1...3 {
+            if attempt > 1 {
+                Logger.horoscope.debug("🔄 Tentative \(attempt)/3...")
+                try? await Task.sleep(nanoseconds: 2_000_000_000)
+            }
+            
+            let urlString = "https://ohmanda.com/api/horoscope/\(sign.rawValue)"
+            guard let url = URL(string: urlString) else {
+                errorMessage = localizedError("URL invalide", "Invalid URL")
+                isLoading = false
+                return
+            }
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "GET"
+            request.timeoutInterval = 15
+            
+            do {
+                let (data, response) = try await URLSession.shared.data(for: request)
+                
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    errorMessage = localizedError("Réponse serveur invalide", "Invalid server response")
+                    continue
+                }
+                
+                Logger.horoscope.debug("📡 Ohmanda - Code de réponse: \(httpResponse.statusCode)")
+                lastStatusCode = httpResponse.statusCode
+                
+                guard httpResponse.statusCode == 200 else {
+                    if httpResponse.statusCode == 503 || httpResponse.statusCode == 502 {
+                        Logger.horoscope.warning("⚠️ Ohmanda temporairement indisponible (\(httpResponse.statusCode))")
+                        continue
+                    }
+                    errorMessage = localizedError("Erreur serveur (\(httpResponse.statusCode))", "Server error (\(httpResponse.statusCode))")
+                    isLoading = false
+                    return
+                }
+                
+                // Parser la réponse Ohmanda: {"horoscope": "text"}
+                if let json = try? JSONSerialization.jsonObject(with: data) as? [String: String],
+                   let horoscopeText = json["horoscope"] {
+                    
+                    // Créer un HoroscopeResponse avec les données disponibles
+                    let today = Date()
+                    let dateFormatter = DateFormatter()
+                    dateFormatter.dateFormat = "MMMM d, yyyy"
+                    let currentDateStr = dateFormatter.string(from: today)
+                    
+                    let horoscope = HoroscopeResponse(
+                        dateRange: sign.dateRange,
+                        currentDate: currentDateStr,
+                        description: horoscopeText,
+                        compatibility: "",
+                        mood: "",
+                        color: "",
+                        luckyNumber: "",
+                        luckyTime: ""
+                    )
+                    
+                    self.currentHoroscope = horoscope
+                    saveToCache(horoscope)
+                    
+                    // ✅ Préparer la traduction si nécessaire
+                    let userLanguage = Locale.preferredLanguages.first?.prefix(2).lowercased() ?? "en"
+                    if userLanguage != "en" && isTranslationAvailable {
+                        prepareTranslation(for: horoscope, to: String(userLanguage))
+                    }
+                    
+                    Logger.horoscope.info("✅ Horoscope Ohmanda récupéré avec succès")
+                    isLoading = false
+                    return
+                } else {
+                    Logger.horoscope.error("❌ Impossible de parser la réponse Ohmanda")
+                    continue
+                }
+                
+            } catch {
+                Logger.horoscope.error("❌ Erreur Ohmanda (tentative \(attempt)): \(error.localizedDescription)")
+                continue
+            }
+        }
+        
+        // Échec - essayer le cache expiré
+        await handleFetchFailure(lastStatusCode: lastStatusCode)
     }
     
     // MARK: - Aztro API
