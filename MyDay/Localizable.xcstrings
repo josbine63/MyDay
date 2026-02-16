@@ -167,6 +167,12 @@
     "Action" : {
 
     },
+    "Actions rapides" : {
+
+    },
+    "Active les logs détaillés pour la galerie photos et EventKit (calendriers, rappels)." : {
+
+    },
     "Activer" : {
 
     },
@@ -183,6 +189,9 @@
 
     },
     "Afficher les photos" : {
+
+    },
+    "Ajouter lien de test" : {
 
     },
     "Ajouter un lien" : {
@@ -390,7 +399,6 @@
       }
     },
     "Debug" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -399,6 +407,12 @@
           }
         }
       }
+    },
+    "Debug Liens" : {
+
+    },
+    "Debug Liens Personnalisés" : {
+
     },
     "Désactiver" : {
 
@@ -414,6 +428,9 @@
       }
     },
     "Détection" : {
+
+    },
+    "Disponible et prête" : {
 
     },
     "Documentation" : {
@@ -513,7 +530,16 @@
     "L'icône 👥 apparaît automatiquement à côté des événements et rappels provenant de calendriers ou listes partagés." : {
 
     },
+    "La pensée du jour et l'horoscope seront traduits automatiquement en français." : {
+
+    },
     "La pensée du jour s'affiche en haut de votre vue principale." : {
+
+    },
+    "La traduction automatique nécessite iOS 18 ou plus récent." : {
+
+    },
+    "Langues non téléchargées" : {
 
     },
     "Les liens désactivés sont conservés mais ne seront pas utilisés." : {
@@ -582,6 +608,15 @@
         }
       }
     },
+    "Logs verbeux Calendriers/Rappels" : {
+
+    },
+    "Logs verbeux Photos" : {
+
+    },
+    "MATCH ✓" : {
+
+    },
     "Médicament" : {
       "localizations" : {
         "en" : {
@@ -627,6 +662,12 @@
           }
         }
       }
+    },
+    "Nécessite iOS 18+" : {
+
+    },
+    "Nettoyer les liens de test" : {
+
     },
     "newCalTitle" : {
       "extractionState" : "manual",
@@ -707,6 +748,9 @@
     "Nom du raccourci" : {
 
     },
+    "Nombre de liens" : {
+
+    },
     "Notes (optionnel)" : {
       "localizations" : {
         "en" : {
@@ -737,6 +781,9 @@
       }
     },
     "Ouvrir l'app Raccourcis" : {
+
+    },
+    "Ouvrir l'app Traduire" : {
 
     },
     "Ouvrir Santé" : {
@@ -981,6 +1028,9 @@
     "Photos" : {
 
     },
+    "Pour activer la traduction automatique:\n1. Appuyez sur «Ouvrir l'app Traduire»\n2. Dans Traduire, appuyez sur 🌐 en bas\n3. Téléchargez «Anglais» et «Français»\n4. Revenez ici et appuyez sur «Vérifier»" : {
+
+    },
     "Pour activer les permissions de santé:\n\n1. Ouvrez l'app Santé\n2. Allez dans Partage\n3. Sélectionnez Apps\n4. Trouvez et ouvrez MyDay\n5. Activez les données souhaitées" : {
 
     },
@@ -1004,6 +1054,9 @@
       }
     },
     "Précédent" : {
+
+    },
+    "Premier lien" : {
 
     },
     "Pris à" : {
@@ -1052,6 +1105,9 @@
           }
         }
       }
+    },
+    "Réinitialiser tout" : {
+
     },
     "Santé" : {
 
@@ -1102,6 +1158,9 @@
         }
       }
     },
+    "shortcuts://run-shortcut?name=%@" : {
+
+    },
     "Signe actuel" : {
 
     },
@@ -1136,6 +1195,9 @@
     "Télécharger" : {
 
     },
+    "Téléchargez Anglais → Français" : {
+
+    },
     "Terminé" : {
       "localizations" : {
         "en" : {
@@ -1156,6 +1218,18 @@
         }
       }
     },
+    "Test de matching" : {
+
+    },
+    "Test de raccourci" : {
+
+    },
+    "Tester l'ouverture" : {
+
+    },
+    "Tester le matching" : {
+
+    },
     "Tester le raccourci" : {
 
     },
@@ -1174,6 +1248,9 @@
           }
         }
       }
+    },
+    "Titre à tester" : {
+
     },
     "Titre exact" : {
 
@@ -1211,6 +1288,12 @@
     "Toutes vos données restent sur votre appareil" : {
 
     },
+    "Traduction" : {
+
+    },
+    "Traduction automatique" : {
+
+    },
     "Type de correspondance" : {
 
     },
@@ -1224,6 +1307,12 @@
           }
         }
       }
+    },
+    "URLs générées" : {
+
+    },
+    "Vérifier la disponibilité" : {
+
     },
     "Vérifiez que le raccourci fonctionne correctement." : {
 

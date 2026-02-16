@@ -7,17 +7,27 @@
 		<string>en</string>
 		<string>fr</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>com.josblais.myday</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>myday</string>
+			</array>
+		</dict>
+	</array>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>x-apple-reminderkit</string>
 		<string>calshow</string>
-		<string>x-apple-health://MedicationsHealthAppPlugin.healthplugin</string>
-		<string>x-apple-fitness://activity</string>
-		<string>x-apple-fitness://</string>
-		<string>x-apple-weather://</string>
-		<string>weather://</string>
-		<string>shortcuts://run-shortcut?name=fitness</string>
-		<string>x-apple-health://</string>
+		<string>x-apple-health</string>
+		<string>x-apple-fitness</string>
+		<string>x-apple-weather</string>
+		<string>weather</string>
+		<string>shortcuts</string>
+		<string>myday</string>
 	</array>
 </dict>
 </plist>
